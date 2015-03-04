@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Eugene Sadovoi.-->
+<ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties" 
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule
+        Name="ConfigurationGeneral"
+        DisplayName="General"
+        PageTemplate="generic"
+        Description="General" >
+    
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General" Description="General" />
+      <Category Name="ProjectDefaults" DisplayName="Project Settings" Description="Project Defaults" />
+      <Category Name="BoostInfo" DisplayName="Boost Info" Description="Boost Library Info" />
+    </Rule.Categories>
+    
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Configuration" />
+    </Rule.DataSource>
+    
+    <StringProperty Name="OutDir" DisplayName="Output Directory"
+                    Description="Specifies a relative path to the output file directory; can include environment variables."
+                    Category="General" Default="$(SolutionDir)$(Configuration)\"
+                    Subtype="folder"
+                    F1Keyword="VC.Project.VCConfiguration.OutputDirectory">
+      <StringProperty.DataSource>
+        <DataSource Persistence="ProjectFile" Label="" />
+      </StringProperty.DataSource>
+    </StringProperty>
+    <StringProperty Name="IntDir" DisplayName="Intermediate Directory"
+                    Description="Specifies a relative path to the intermediate file directory; can include environment variables."
+                    Category="General" Default="$(Configuration)\"
+                    Subtype="folder"
+                    F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory">
+      <StringProperty.DataSource>
+        <DataSource Persistence="ProjectFile" Label="" />
+      </StringProperty.DataSource>
+    </StringProperty>
+    <StringProperty Name="BuildLogFile" DisplayName="Build Log File"
+                    Description="Specifies the build log file to write to when build logging is enabled."
+                    F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
+                    Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
+                    Subtype="file">
+      <StringProperty.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path" />
+      </StringProperty.DataSource>
+    </StringProperty>
+    <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets"
+                         Description="Specifies the toolset used for building the current configuration; If not set, the default toolset is used"
+                         F1Keyword="VC.Project.VCConfiguration.PlatformToolset"
+                         Category="General" />
+    <EnumProperty Name="boost-link" DisplayName="Configuration Type"
+                  Description="Whether to build static or shared libraries."
+                  Category="ProjectDefaults">
+      <EnumValue Name="shared" Switch=".dll" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" />
+      <EnumValue Name="static" Switch=".lib" DisplayName="Static library" Description="Static Library (.lib)" />
+    </EnumProperty>
+    <EnumProperty Name="boost-runtime-link" DisplayName="Link To Runtime Library" 
+                  Description="Specify runtime library for linking." Category="ProjectDefaults">
+      <EnumValue Name="shared" Switch=".dll" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" />
+      <EnumValue Name="static" Switch=".lib" DisplayName="Static Libraries " Description="Link to static libraries (.lib)" />
+    </EnumProperty>
+    <EnumProperty Name="boost-threading" DisplayName="Link To Runtime Library"
+                  Description="Whether to build single or multithreaded binaries." Category="ProjectDefaults">
+      <EnumValue Name="single" Switch="single" DisplayName="Single Threaded" Description="Builds Single Threaded binaries" />
+      <EnumValue Name="multi" Switch="multi" DisplayName="Multi Threaded" Description="Builds Multi Threaded binaries" />
+    </EnumProperty>
+    <EnumProperty Name="boost-build-type" DisplayName="Build Type"
+                  Description="Build the specified pre-defined set of variations of the libraries." Category="ProjectDefaults">
+      <EnumValue Name="minimal" Switch="minimal" DisplayName="Minimal Build" Description="Builds a minimal set of variants." />
+      <EnumValue Name="complete" Switch="complete" DisplayName="Complete Build" Description="Build all possible variations." />
+    </EnumProperty>
+    <EnumProperty Name="boost-layout" DisplayName="Layout"
+                  Description="Determine whether to choose library names and header locations such that multiple versions of Boost or multiple compilers can be used on the same system." 
+                  Category="ProjectDefaults">
+      <EnumValue Name="versioned" Switch="versioned" DisplayName="Versioned Layout" Description="Names of boost binaries include the Boost version number, name and version of the compiler and encoded build properties." />
+      <EnumValue Name="tagged" Switch="tagged" DisplayName="Tagged Layout" Description="Names of boost binaries include the encoded build properties such as variant and threading, but do not including compiler name and version, or Boost version." />
+      <EnumValue Name="system" Switch="system" DisplayName="System Layout" Description="Binaries names do not include the Boost version number or the name and version number of the compiler." />
+    </EnumProperty>
+    <EnumProperty Name="CharacterSet" DisplayName="Character Set" Visible="false"
+                  Description="Tells the compiler to use the specified character set; aids in localization issues."
+                  Category="ProjectDefaults" 
+                  F1Keyword="VC.Project.VCConfiguration.CharacterSet">
+      <EnumValue Name="NotSet" DisplayName="Not Set" Description="Not Set" />
+      <EnumValue Name="Unicode" DisplayName="Use Unicode Character Set" Description="Use Unicode Character Set" />
+      <EnumValue Name="MultiByte" DisplayName="Use Multi-Byte Character Set" Description="Use Multi-Byte Character Set" />
+    </EnumProperty>
+    <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime Support" Visible="false"
+                  Description="Specifies whether this configuration supports the Common Language Runtime. This is incompatible with some other settings, e.g. runtime checks. See help for /clr family of C++ compiler switches for full list of conflicts."
+                  Category="ProjectDefaults"
+                  F1Keyword="VC.Project.VCConfiguration.ManagedExtensions">
+      <EnumValue Name="false" DisplayName="No Common Language Runtime Support"
+                 Description="No Common Language Runtime Support" />
+      <EnumValue Name="true" DisplayName="Common Language Runtime Support (/clr)"
+                 Description="Common Language Runtime Support (/clr)"/>
+      <EnumValue Name="Pure" DisplayName="Pure MSIL Common Language Runtime Support (/clr:pure)"
+                 Description="Pure MSIL Common Language Runtime Support (/clr:pure)" />
+      <EnumValue Name="Safe" DisplayName="Safe MSIL Common Language Runtime Support (/clr:safe)"
+                 Description="Safe MSIL Common Language Runtime Support (/clr:safe)" />
+      <EnumValue Name="OldSyntax" DisplayName="Common Language Runtime Support, Old Syntax (/clr:oldSyntax)"
+                 Description="Common Language Runtime Support, Old Syntax (/clr:oldSyntax)" />
+    </EnumProperty>
+    <EnumProperty Name="boost-windows-api" DisplayName="Windows Runtime support" 
+                  Description="Specify which Windows API set to target." Category="ProjectDefaults" >
+      <EnumValue Name="desktop" Switch="desktop" DisplayName="Windows Desktop" Description="Regular Windows binaries" />
+      <EnumValue Name="store"   Switch="store"   DisplayName="Windows Store" Description="Binaries for Windows Store"/>
+      <EnumValue Name="phone"   Switch="phone"   DisplayName="Windows Phone" Description="Binaries for Windows Phone" />
+    </EnumProperty>
+    <StringProperty Name="BoostVersion" DisplayName="Library Version"
+                  Description="Specifies the version of the boost library."
+                  Category="BoostInfo"
+                  ReadOnly="true"
+                  Visible="false" />
+    <StringProperty Name="BoostDir" DisplayName="BOOST_ROOT"
+                  Description="Location of boost library."
+                  Category="BoostInfo"
+                  Visible="false" 
+                  ReadOnly="true" />
+    <StringProperty Name="boost-extra" DisplayName="Additional Options" Description="Additional Options." Category="ProjectDefaults" />
+  </Rule>
+</ProjectSchemaDefinitions>
+
+
+
+
+
+

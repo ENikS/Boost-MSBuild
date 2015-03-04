@@ -1,0 +1,451 @@
+﻿<!--
+***********************************************************************************************
+
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+
+
+Copyright (C) 
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup Label="Local difinitions">
+    <BuildEnvVars Include="VS_UNICODE_OUTPUT=" />
+    
+    <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.h" />
+    <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.c" />
+  </ItemGroup>
+
+  <Target Name="GetCxxFlags" Returns="cxx-flags">
+    <PropertyGroup Label="Compiler Options">
+      <!--Bool Property-->                                              
+      <cxx-flags Condition="'$(CompileAsWinRT)'                     =='true' ">$(cxx-flags)&#32;/ZW</cxx-flags>
+      <cxx-flags Condition="'$(SuppressStartupBanner)'              =='true' ">$(cxx-flags)&#32;/nologo</cxx-flags>
+      <cxx-flags Condition="'$(TreatWarningAsError)'                =='true' ">$(cxx-flags)&#32;/WX</cxx-flags>
+      <cxx-flags Condition="'$(TreatWarningAsError)'                =='false'">$(cxx-flags)&#32;/WX-</cxx-flags>
+      <cxx-flags Condition="'$(SDLCheck)'                           =='true' ">$(cxx-flags)&#32;/sdl</cxx-flags>
+      <cxx-flags Condition="'$(SDLCheck)'                           =='false'">$(cxx-flags)&#32;/sdl-</cxx-flags>
+      <cxx-flags Condition="'$(MultiProcessorCompilation)'          =='true' ">$(cxx-flags)&#32;/MP</cxx-flags>
+      <cxx-flags Condition="'$(IntrinsicFunctions)'                 =='true' ">$(cxx-flags)&#32;/Oi</cxx-flags>
+      <cxx-flags Condition="'$(OmitFramePointers)'                  =='true' ">$(cxx-flags)&#32;/Oy</cxx-flags>
+      <cxx-flags Condition="'$(OmitFramePointers)'                  =='false'">$(cxx-flags)&#32;/Oy-</cxx-flags>
+      <cxx-flags Condition="'$(EnableFiberSafeOptimizations)'       =='true' ">$(cxx-flags)&#32;/GT</cxx-flags>
+      <cxx-flags Condition="'$(UndefineAllPreprocessorDefinitions)' =='true' ">$(cxx-flags)&#32;/u</cxx-flags>
+      <cxx-flags Condition="'$(IgnoreStandardIncludePath)'          =='true' ">$(cxx-flags)&#32;/X</cxx-flags>
+      <cxx-flags Condition="'$(PreprocessToFile)'                   =='true' ">$(cxx-flags)&#32;/P</cxx-flags>
+      <cxx-flags Condition="'$(PreprocessSuppressLineNumbers)'      =='true' ">$(cxx-flags)&#32;/EP</cxx-flags>
+      <cxx-flags Condition="'$(PreprocessKeepComments)'             =='true' ">$(cxx-flags)&#32;/C</cxx-flags>
+      <cxx-flags Condition="'$(StringPooling)'                      =='true' ">$(cxx-flags)&#32;/GF</cxx-flags>
+      <cxx-flags Condition="'$(StringPooling)'                      =='false'">$(cxx-flags)&#32;/GF-</cxx-flags>
+      <cxx-flags Condition="'$(MinimalRebuild)'                     =='true' ">$(cxx-flags)&#32;/Gm</cxx-flags>
+      <cxx-flags Condition="'$(MinimalRebuild)'                     =='false'">$(cxx-flags)&#32;/Gm-</cxx-flags>
+      <cxx-flags Condition="'$(SmallerTypeCheck)'                   =='true' ">$(cxx-flags)&#32;/RTCc</cxx-flags>
+      <cxx-flags Condition="'$(FunctionLevelLinking)'               =='true' ">$(cxx-flags)&#32;/Gy</cxx-flags>
+      <cxx-flags Condition="'$(FunctionLevelLinking)'               =='false'">$(cxx-flags)&#32;/Gy-</cxx-flags>
+      <cxx-flags Condition="'$(EnableParallelCodeGeneration)'       =='true' ">$(cxx-flags)&#32;/Qpar</cxx-flags>
+      <cxx-flags Condition="'$(EnableParallelCodeGeneration)'       =='false'">$(cxx-flags)&#32;/Qpar-</cxx-flags>
+      <cxx-flags Condition="'$(FloatingPointExceptions)'            =='true' ">$(cxx-flags)&#32;/fp:except</cxx-flags>
+      <cxx-flags Condition="'$(FloatingPointExceptions)'            =='false'">$(cxx-flags)&#32;/fp:except-</cxx-flags>
+      <cxx-flags Condition="'$(CreateHotpatchableImage)'            =='true' ">$(cxx-flags)&#32;/hotpatch</cxx-flags>
+      <cxx-flags Condition="'$(DisableLanguageExtensions)'          =='true' ">$(cxx-flags)&#32;/Za</cxx-flags>
+      <cxx-flags Condition="'$(TreatWChar_tAsBuiltInType)'          =='true' ">$(cxx-flags)&#32;/Zc:wchar_t</cxx-flags>
+      <cxx-flags Condition="'$(TreatWChar_tAsBuiltInType)'          =='false'">$(cxx-flags)&#32;/Zc:wchar_t-</cxx-flags>
+      <cxx-flags Condition="'$(ForceConformanceInForLoopScope)'     =='true' ">$(cxx-flags)&#32;/Zc:forScope</cxx-flags>
+      <cxx-flags Condition="'$(ForceConformanceInForLoopScope)'     =='false'">$(cxx-flags)&#32;/Zc:forScope-</cxx-flags>
+      <cxx-flags Condition="'$(EnforceTypeConversionRules)'         =='true' ">$(cxx-flags)&#32;/Zc:rvalueCast</cxx-flags>
+      <cxx-flags Condition="'$(EnforceTypeConversionRules)'         =='false'">$(cxx-flags)&#32;/Zc:rvalueCast-</cxx-flags>
+      <cxx-flags Condition="'$(RuntimeTypeInfo)'                    =='true' ">$(cxx-flags)&#32;/GR</cxx-flags>
+      <cxx-flags Condition="'$(RuntimeTypeInfo)'                    =='false' ">$(cxx-flags)&#32;/GR-</cxx-flags>
+      <cxx-flags Condition="'$(OpenMPSupport)'                      =='true' ">$(cxx-flags)&#32;/openmp</cxx-flags>
+      <cxx-flags Condition="'$(OpenMPSupport)'                      =='false'">$(cxx-flags)&#32;/openmp-</cxx-flags>
+      <cxx-flags Condition="'$(ExpandAttributedSource)'             =='true' ">$(cxx-flags)&#32;/Fx</cxx-flags>
+      <cxx-flags Condition="'$(UseUnicodeForAssemblerListing)'      =='true' ">$(cxx-flags)&#32;/FAu</cxx-flags>
+      <cxx-flags Condition="'$(GenerateXMLDocumentationFiles)'      =='true' ">$(cxx-flags)&#32;/doc</cxx-flags>
+      <cxx-flags Condition="'$(BrowseInformation)'                  =='true' ">$(cxx-flags)&#32;/FR</cxx-flags>
+      <cxx-flags Condition="'$(ShowIncludes)'                       =='true' ">$(cxx-flags)&#32;/showIncludes</cxx-flags>
+      <cxx-flags Condition="'$(UseFullPaths)'                       =='true' ">$(cxx-flags)&#32;/FC</cxx-flags>
+      <cxx-flags Condition="'$(OmitDefaultLibName)'                 =='true' ">$(cxx-flags)&#32;/Zl</cxx-flags>
+      <!--String & Enum Property-->
+      <cxx-flags Condition="'$(DebugInformationFormat)'             !=''     ">$(cxx-flags)&#32;/$(DebugInformationFormat)</cxx-flags>
+      <cxx-flags Condition="'$(CompileAsManaged)'                   !=''     ">$(cxx-flags)&#32;/$(CompileAsManaged.Replace("_", ":"))</cxx-flags>
+      <cxx-flags Condition="'$(WarningLevel)'                       !=''     ">$(cxx-flags)&#32;/$(WarningLevel)</cxx-flags>
+      <cxx-flags Condition="'$(Optimization)'                       !=''     ">$(cxx-flags)&#32;/$(Optimization)</cxx-flags>
+      <cxx-flags Condition="'$(InlineFunctionExpansion)'            !=''     ">$(cxx-flags)&#32;/$(InlineFunctionExpansion)</cxx-flags>
+      <cxx-flags Condition="'$(FavorSizeOrSpeed)'                   !=''     ">$(cxx-flags)&#32;/$(FavorSizeOrSpeed)</cxx-flags>
+      <cxx-flags Condition="'$(ExceptionHandling)'                  !=''     ">$(cxx-flags)&#32;/$(ExceptionHandling)</cxx-flags>
+      <cxx-flags Condition="'$(BasicRuntimeChecks)'                 !=''     ">$(cxx-flags)&#32;/$(BasicRuntimeChecks)</cxx-flags>
+      <cxx-flags Condition="'$(Runtime_library)'                     !=''     ">$(cxx-flags)&#32;/$(RuntimeLibrary)</cxx-flags>
+      <cxx-flags Condition="'$(StructMemberAlignment)'              !=''     ">$(cxx-flags)&#32;/$(StructMemberAlignment)</cxx-flags>
+      <cxx-flags Condition="'$(BufferSecurityCheck)'                !=''     ">$(cxx-flags)&#32;/$(BufferSecurityCheck.Replace("_", "-"))</cxx-flags>
+      <cxx-flags Condition="'$(EnableEnhancedInstructionSet)'       !=''     ">$(cxx-flags)&#32;/$(EnableEnhancedInstructionSet.Replace("_", ":"))</cxx-flags>
+      <cxx-flags Condition="'$(FloatingPointModel)'                 !=''     ">$(cxx-flags)&#32;/$(FloatingPointModel.Replace("_", ":"))</cxx-flags>
+      <cxx-flags Condition="'$(PrecompiledHeader)'                  !=''     ">$(cxx-flags)&#32;/$(PrecompiledHeader)</cxx-flags>
+      <cxx-flags Condition="'$(PrecompiledHeaderFile)'              !=''     ">$(cxx-flags)&#32;/$(PrecompiledHeaderFile)</cxx-flags>
+      <cxx-flags Condition="'$(PrecompiledHeaderOutputFile)'        !=''     ">$(cxx-flags)&#32;/$(PrecompiledHeaderOutputFile)</cxx-flags>
+      <cxx-flags Condition="'$(AssemblerOutput)'                    !=''     ">$(cxx-flags)&#32;/$(AssemblerOutput)</cxx-flags>
+      <cxx-flags Condition="'$(AssemblerListingLocation)'           !=''     ">$(cxx-flags)&#32;/$(AssemblerListingLocation)</cxx-flags>
+      <cxx-flags Condition="'$(ObjectFileName)'                     !=''     ">$(cxx-flags)&#32;/$(ObjectFileName)</cxx-flags>
+      <cxx-flags Condition="'$(ProgramDataBaseFileName)'            !=''     ">$(cxx-flags)&#32;/$(ProgramDataBaseFileName)</cxx-flags>
+      <cxx-flags Condition="'$(XMLDocumentationFileName)'           !=''     ">$(cxx-flags)&#32;/$(XMLDocumentationFileName)</cxx-flags>
+      <cxx-flags Condition="'$(BrowseInformationFile)'              !=''     ">$(cxx-flags)&#32;/$(BrowseInformationFile)</cxx-flags>
+      <cxx-flags Condition="'$(CallingConvention)'                  !=''     ">$(cxx-flags)&#32;/$(CallingConvention)</cxx-flags>
+      <cxx-flags Condition="'$(CompileAs)'                          !=''     ">$(cxx-flags)&#32;/$(CompileAs)</cxx-flags>
+      <cxx-flags Condition="'$(ErrorReporting)'                     !=''     ">$(cxx-flags)&#32;/$(ErrorReporting)</cxx-flags>
+      <cxx-flags Condition="'$(AdditionalOptions)'                  !=''     ">$(cxx-flags)&#32;/$(AdditionalOptions)</cxx-flags>
+      <!--String List Property-->                                          
+      <cxx-flags Condition="'$(DisableSpecificWarnings)'            !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(DisableSpecificWarnings),        '(\d+)([;,]|$)', ' /WD"$1"'))</cxx-flags>
+      <cxx-flags Condition="'$(AdditionalIncludeDirectories)'       !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(AdditionalIncludeDirectories),    '(.+)([;,]|$)', ' /I"$1"' ))</cxx-flags>
+      <cxx-flags Condition="'$(AdditionalUsingDirectories)'         !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(AdditionalUsingDirectories),      '(.+)([;,]|$)', ' /AI"$1"'))</cxx-flags>
+      <cxx-flags Condition="'$(PreprocessorDefinitions)'            !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(PreprocessorDefinitions),         '(.+)([;,]|$)', ' /"D$1"' ))</cxx-flags>
+      <cxx-flags Condition="'$(UndefinePreprocessorDefinitions)'    !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(UndefinePreprocessorDefinitions), '(.+)([;,]|$)', ' /U"$1"' ))</cxx-flags>
+      <cxx-flags Condition="'$(ForcedIncludeFiles)'                 !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(ForcedIncludeFiles),              '(.+)([;,]|$)', ' /FI"$1"'))</cxx-flags>
+      <cxx-flags Condition="'$(ForcedUsingFiles)'                   !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(ForcedUsingFiles),                '(.+)([;,]|$)', ' /FU"$1"'))</cxx-flags>
+      <cxx-flags Condition="'$(TreatSpecificWarningsAsErrors)'      !=''     ">$(cxx-flags)$([System.Text.RegularExpressions.Regex]::Replace($(TreatSpecificWarningsAsErrors),  '(\d+)([;,]|$)', ' /we"$1"'))</cxx-flags>
+      <!--Done-->
+      <cxx-flags>$(cxx-flags.Trim())</cxx-flags>
+      <cxx-flags Condition="'$(cxx-flags)'!=''">&#32;cxxflags='$(cxx-flags)'</cxx-flags>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="GetLinkFlags" Returns="link-flags">
+    <PropertyGroup Label="Link Flagss">
+      <!-- IntProperty -->
+      <link-flags Condition="'$(TypeLibraryResourceID)'             != ''    ">$(link-flags)&#32;/TLBID:"$(TypeLibraryResourceID)"</link-flags>
+      <link-flags Condition="'$(SectionAlignment)'                  != ''    ">$(link-flags)&#32;/ALIGN:"$(SectionAlignment)"</link-flags>
+      <!--Bool Property-->
+      <link-flags Condition="'$(LinkIncremental)'                   == 'true' ">$(link-flags)&#32;/INCREMENTAL</link-flags>
+      <link-flags Condition="'$(LinkIncremental)'                   =='false' ">$(link-flags)&#32;/INCREMENTAL:NO</link-flags>
+      <link-flags Condition="'$(SuppressStartupBanner)'             == 'true' ">$(link-flags)&#32;/NOLOGO</link-flags>
+      <link-flags Condition="'$(LinkStatus)'                        == 'true' ">$(link-flags)&#32;/LTCG:STATUS</link-flags>
+      <link-flags Condition="'$(LinkStatus)'                        =='false' ">$(link-flags)&#32;/LTCG:NOSTATUS</link-flags>
+      <link-flags Condition="'$(PreventDllBinding)'                 == 'true' ">$(link-flags)&#32;/ALLOWBIND</link-flags>
+      <link-flags Condition="'$(PreventDllBinding)'                 =='false' ">$(link-flags)&#32;/ALLOWBIND:NO</link-flags>
+      <link-flags Condition="'$(TreatLinkerWarningAsErrors)'        == 'true' ">$(link-flags)&#32;/WX</link-flags>
+      <link-flags Condition="'$(TreatLinkerWarningAsErrors)'        =='false' ">$(link-flags)&#32;/WX:NO</link-flags>
+      <link-flags Condition="'$(IgnoreAllDefaultLibraries)'         == 'true' ">$(link-flags)&#32;/NODEFAULTLIB</link-flags>
+      <link-flags Condition="'$(GenerateManifest)'                  == 'true' ">$(link-flags)&#32;/MANIFEST</link-flags>
+      <link-flags Condition="'$(GenerateManifest)'                  =='false' ">$(link-flags)&#32;/MANIFEST:NO</link-flags>
+      <link-flags Condition="'$(AllowIsolation)'                    == 'true' ">$(link-flags)&#32;/ALLOWISOLATION</link-flags>
+      <link-flags Condition="'$(AllowIsolation)'                    =='false' ">$(link-flags)&#32;/ALLOWISOLATION:NO</link-flags>
+      <link-flags Condition="'$(EnableUAC)'                         =='false' ">$(link-flags)&#32;/MANIFESTUAC:NO</link-flags>
+      <link-flags Condition="'$(EnableUAC)'=='true' And '$(UACExecutionLevel)'=='' AND '$(EnableUAC)'==''">$(link-flags)&#32;/MANIFESTUAC</link-flags>
+      <link-flags Condition="'$(EnableUAC)'=='true' And '$(UACUIAccess)'=='true' ">$(link-flags)&#32;/MANIFESTUAC:uiAccess='true'</link-flags>
+      <link-flags Condition="'$(EnableUAC)'=='true' And '$(UACUIAccess)'=='false'">$(link-flags)&#32;/MANIFESTUAC:uiAccess='false'</link-flags>
+      <link-flags Condition="'$(GenerateMapFile)'                   == 'true' ">$(link-flags)&#32;/MAP</link-flags>
+      <link-flags Condition="'$(MapExports)'                        == 'true' ">$(link-flags)&#32;/MAPINFO</link-flags>
+      <link-flags Condition="'$(AssemblyDebug)'                     == 'true' ">$(link-flags)&#32;/ASSEMBLYDEBUG</link-flags>
+      <link-flags Condition="'$(AssemblyDebug)'                     =='false' ">$(link-flags)&#32;/ASSEMBLYDEBUG:DISABLE</link-flags>
+      <link-flags Condition="'$(LargeAddressAware)'                 == 'true' ">$(link-flags)&#32;/LARGEADDRESSAWARE</link-flags>
+      <link-flags Condition="'$(LargeAddressAware)'                 =='false' ">$(link-flags)&#32;/LARGEADDRESSAWARE:NO</link-flags>
+      <link-flags Condition="'$(TerminalServerAware)'               == 'true' ">$(link-flags)&#32;/TSAWARE</link-flags>
+      <link-flags Condition="'$(TerminalServerAware)'               =='false' ">$(link-flags)&#32;/TSAWARE:NO</link-flags>
+      <link-flags Condition="'$(SwapRunFromCD)'                     == 'true' ">$(link-flags)&#32;/SWAPRUN</link-flags>
+      <link-flags Condition="'$(SwapRunFromNET)'                    == 'true' ">$(link-flags)&#32;/SWAPRUN</link-flags>
+      <link-flags Condition="'$(OptimizeReferences)'                == 'true' ">$(link-flags)&#32;/OPT</link-flags>
+      <link-flags Condition="'$(OptimizeReferences)'                =='false' ">$(link-flags)&#32;/OPT:NOREF</link-flags>
+      <link-flags Condition="'$(EnableCOMDATFolding)'               == 'true' ">$(link-flags)&#32;/OPT:ICF</link-flags><!--[=iterations] -->
+      <link-flags Condition="'$(EnableCOMDATFolding)'               =='false' ">$(link-flags)&#32;/OPT:NOICF</link-flags>
+      <link-flags Condition="'$(IgnoreEmbeddedIDL)'                 == 'true' ">$(link-flags)&#32;/IGNOREIDL</link-flags>
+      <link-flags Condition="'$(AppContainer)'                      == 'true' ">$(link-flags)&#32;/APPCONTAINER</link-flags>
+      <link-flags Condition="'$(WindowsMetadataLinkDelaySign)'      == 'true' ">$(link-flags)&#32;/WINMDDELAYSIGN</link-flags>
+      <link-flags Condition="'$(WindowsMetadataLinkDelaySign)'      =='false' ">$(link-flags)&#32;/WINMDDELAYSIGN:NO</link-flags>
+      <link-flags Condition="'$(NoEntryPoint)'                      == 'true' ">$(link-flags)&#32;/NOENTRY</link-flags>
+      <link-flags Condition="'$(SetChecksum)'                       == 'true' ">$(link-flags)&#32;/RELEASE</link-flags>
+      <link-flags Condition="'$(RandomizedBaseAddress)'             == 'true' ">$(link-flags)&#32;/DYNAMICBASE</link-flags>
+      <link-flags Condition="'$(RandomizedBaseAddress)'             =='false' ">$(link-flags)&#32;/DYNAMICBASE:NO</link-flags>
+      <link-flags Condition="'$(FixedBaseAddress)'                  == 'true' ">$(link-flags)&#32;/FIXED</link-flags>
+      <link-flags Condition="'$(FixedBaseAddress)'                  =='false' ">$(link-flags)&#32;/FIXED:NO</link-flags>
+      <link-flags Condition="'$(DataExecutionPrevention)'           == 'true' ">$(link-flags)&#32;/NXCOMPAT</link-flags>
+      <link-flags Condition="'$(DataExecutionPrevention)'           =='false' ">$(link-flags)&#32;/NXCOMPAT:NO</link-flags>
+      <link-flags Condition="'$(TurnOffAssemblyGeneration)'         == 'true' ">$(link-flags)&#32;/NOASSEMBLY</link-flags>
+      <link-flags Condition="'$(SupportUnloadOfDelayLoadedDLL)'     == 'true' ">$(link-flags)&#32;/DELAY:UNLOAD</link-flags>
+      <link-flags Condition="'$(SupportNobindOfDelayLoadedDLL)'     == 'true' ">$(link-flags)&#32;/DELAY:NOBIND</link-flags>
+      <link-flags Condition="'$(Profile)'                           == 'true' ">$(link-flags)&#32;/PROFILE</link-flags>
+      <link-flags Condition="'$(LinkDelaySign)'                     == 'true' ">$(link-flags)&#32;/DELAYSIGN</link-flags>
+      <link-flags Condition="'$(LinkDelaySign)'                     =='false' ">$(link-flags)&#32;/DELAYSIGN:NO</link-flags>
+      <link-flags Condition="'$(CLRUnmanagedCodeCheck)'             == 'true' ">$(link-flags)&#32;/CLRUNMANAGEDCODECHECK</link-flags>
+      <link-flags Condition="'$(CLRUnmanagedCodeCheck)'             =='false' ">$(link-flags)&#32;/CLRUNMANAGEDCODECHECK:NO</link-flags>
+      <link-flags Condition="'$(DetectOneDefinitionRule)'           == 'true' ">$(link-flags)&#32;/ODR</link-flags>
+      <link-flags Condition="'$(ImageHasSafeExceptionHandlers)'     == 'true' ">$(link-flags)&#32;/SAFESEH</link-flags>
+      <link-flags Condition="'$(ImageHasSafeExceptionHandlers)'     =='false' ">$(link-flags)&#32;/SAFESEH:NO</link-flags>
+      <link-flags Condition="'$(LinkDLL)'                           == 'true' ">$(link-flags)&#32;/DLL</link-flags>
+      <!--String and Enum Property-->                                       
+      <link-flags Condition="'$(GenerateWindowsMetadata)'           != ''    ">$(link-flags)&#32;/$(GenerateWindowsMetadata.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(Driver)'                            != ''    ">$(link-flags)&#32;/$(Driver.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(ShowProgress)'                      != ''    ">$(link-flags)&#32;/$(ShowProgress.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(ForceFileOutput)'                   != ''    ">$(link-flags)&#32;/$(ForceFileOutput.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(CreateHotPatchableImage)'           != ''    ">$(link-flags)&#32;/$(CreateHotPatchableImage.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(UACExecutionLevel)'!='' And '$(EnableUAC)'=='true'">$(link-flags)&#32;/MANIFESTUAC:level='$(UACExecutionLevel)'</link-flags>
+      <link-flags Condition="'$(GenerateDebugInformation)'          != ''    ">$(link-flags)&#32;/$(GenerateDebugInformation.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(SubSystem)'                         != ''    ">$(link-flags)&#32;/$(SubSystem.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(LinkTimeCodeGeneration)'            != ''    ">$(link-flags)&#32;/$(LinkTimeCodeGeneration.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(WindowsMetadataSignHash)'           != ''    ">$(link-flags)&#32;/$(WindowsMetadataSignHash.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(TargetMachine)'                     != ''    ">$(link-flags)&#32;/$(TargetMachine.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(CLRThreadAttribute)'                != ''    ">$(link-flags)&#32;/$(CLRThreadAttribute.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(CLRImageType)'                      != ''    ">$(link-flags)&#32;/$(CLRImageType.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(SignHash)'                          != ''    ">$(link-flags)&#32;/$(SignHash.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(LinkErrorReporting)'                != ''    ">$(link-flags)&#32;/$(LinkErrorReporting.Replace("_", ":"))</link-flags>
+      <link-flags Condition="'$(CLRSupportLastError )'              != ''    ">$(link-flags)&#32;/$(CLRSupportLastError.Replace("_", ":"))</link-flags>      
+      <link-flags Condition="'$(OutputFile)'                        != ''    ">$(link-flags)&#32;/OUT:"$(OutputFile)"</link-flags>
+      <link-flags Condition="'$(SpecifySectionAttributes)'          != ''    ">$(link-flags)&#32;/SECTION:"$(SpecifySectionAttributes)"</link-flags>
+      <link-flags Condition="'$(MSDOSStubFileName)'                 != ''    ">$(link-flags)&#32;/STUB:"$(MSDOSStubFileName)"</link-flags>
+      <link-flags Condition="'$(ModuleDefinitionFile)'              != ''    ">$(link-flags)&#32;/DEF:"$(ModuleDefinitionFile)"</link-flags>
+      <link-flags Condition="'$(ManifestFile)'                      != ''    ">$(link-flags)&#32;/ManifestFile:"$(ManifestFile)"</link-flags>
+      <link-flags Condition="'$(ProgramDatabaseFile)'               != ''    ">$(link-flags)&#32;/PDB:"$(ProgramDatabaseFile)"</link-flags>
+      <link-flags Condition="'$(StripPrivateSymbols)'               != ''    ">$(link-flags)&#32;/PDBSTRIPPED:"$(StripPrivateSymbols)"</link-flags>
+      <link-flags Condition="'$(HeapReserveSize)'                   != ''    ">$(link-flags)&#32;/HEAP:$(HeapReserveSize)</link-flags>
+      <link-flags Condition="'$(HeapCommitSize)'!='' And '$(HeapReserveSize)'!='' ">$(link-flags),$(HeapCommitSize)</link-flags>
+      <link-flags Condition="'$(StackReserveSize)'                  != ''    ">$(link-flags)&#32;/STACK:$(StackReserveSize)</link-flags>
+      <link-flags Condition="'$(StackCommitSize)'!='' And '$(StackReserveSize)'!=''">$(link-flags),$(StackCommitSize)</link-flags>
+      <link-flags Condition="'$(FunctionOrder)'                     != ''    ">$(link-flags)&#32;/ORDER:@"$(FunctionOrder)"</link-flags>
+      <link-flags Condition="'$(ProfileGuidedDatabase)'             != ''    ">$(link-flags)&#32;/PGD:"$(ProfileGuidedDatabase)"</link-flags>
+      <link-flags Condition="'$(MidlCommandFile)'                   != ''    ">$(link-flags)&#32;/MIDL:@"$(MidlCommandFile)"</link-flags>
+      <link-flags Condition="'$(MergedIDLBaseFileName)'             != ''    ">$(link-flags)&#32;/IDLOUT:"$(MergedIDLBaseFileName)"</link-flags>
+      <link-flags Condition="'$(TypeLibraryFile)'                   != ''    ">$(link-flags)&#32;/TLBOUT:"$(TypeLibraryFile)"</link-flags>
+      <link-flags Condition="'$(WindowsMetadataFile)'               != ''    ">$(link-flags)&#32;/WINMDFILE:"$(WindowsMetadataFile)"</link-flags>
+      <link-flags Condition="'$(WindowsMetadataLinkKeyFile)'        != ''    ">$(link-flags)&#32;/WINMDKEYFILE:"$(WindowsMetadataLinkKeyFile)"</link-flags>
+      <link-flags Condition="'$(WindowsMetadataKeyContainer)'       != ''    ">$(link-flags)&#32;/WINMDKEYCONTAINER:"$(WindowsMetadataKeyContainer)"</link-flags>
+      <link-flags Condition="'$(EntryPointSymbol)'                  != ''    ">$(link-flags)&#32;/ENTRY:"$(EntryPointSymbol)"</link-flags>
+      <link-flags Condition="'$(BaseAddress)'                       != ''    ">$(link-flags)&#32;/BASE:"$(BaseAddress)"</link-flags>
+      <link-flags Condition="'$(Import_library)'                     != ''    ">$(link-flags)&#32;/IMPLIB:"$(ImportLibrary)"</link-flags>
+      <link-flags Condition="'$(MergeSections)'                     != ''    ">$(link-flags)&#32;/MERGE:"$(MergeSections)"</link-flags>
+      <link-flags Condition="'$(LinkKeyFile)'                       != ''    ">$(link-flags)&#32;/KEYFILE:"$(LinkKeyFile)"</link-flags>
+      <link-flags Condition="'$(KeyContainer)'                      != ''    ">$(link-flags)&#32;/KEYCONTAINER:"$(KeyContainer)"</link-flags>
+      <link-flags Condition="'$(AdditionalOptions )'                != ''    ">$(link-flags)&#32;$(AdditionalOptions)</link-flags>      
+      <!--String List Property-->                                           
+      <link-flags Condition="'$(AdditionalLibraryDirectories)'      != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(AdditionalLibraryDirectories),   '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(AdditionalDependencies)'            != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(AdditionalDependencies),         '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(IgnoreSpecificDefaultLibraries)'    != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(IgnoreSpecificDefaultLibraries), '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(AddModuleNamesToAssembly)'          != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(AddModuleNamesToAssembly),       '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(EmbedManagedResourceFile)'          != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(EmbedManagedResourceFile),       '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(ForceSymbolReferences)'             != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(ForceSymbolReferences),          '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(DelayLoadDLLs)'                     != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(DelayLoadDLLs),                  '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(AssemblyLinkResource)'              != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(AssemblyLinkResource),           '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(AdditionalManifestDependencies)'    != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(AdditionalManifestDependencies), '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <link-flags Condition="'$(ManifestInput)'                     != ''    ">$(link-flags)$([System.Text.RegularExpressions.Regex]::Replace($(ManifestInput),                  '(.+)([;,]|$)', ' /"$1"'))</link-flags>
+      <!--Done-->
+      <link-flags>$(link-flags.Trim())</link-flags>
+      <link-flags Condition="'$(link-flags)'!=''">&#32;linkflags='$(link-flags)'</link-flags>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="GetLibrariesOptions" Returns="lib-options">
+    <PropertyGroup Label="Libraries">
+      <lib-options Condition="'$(atomic_library)'          =='true' ">$(lib-options) --with-atomic</lib-options>
+      <lib-options Condition="'$(atomic_library)'          =='false'">$(lib-options) --without-atomic</lib-options>
+      <lib-options Condition="'$(chrono_library)'          =='true' ">$(lib-options) --with-chrono</lib-options>
+      <lib-options Condition="'$(chrono_library)'          =='false'">$(lib-options) --without-chrono</lib-options>
+      <lib-options Condition="'$(container_library)'       =='true' ">$(lib-options) --with-container</lib-options>
+      <lib-options Condition="'$(container_library)'       =='false'">$(lib-options) --without-container</lib-options>
+      <lib-options Condition="'$(context_library)'         =='true' ">$(lib-options) --with-context</lib-options>
+      <lib-options Condition="'$(context_library)'         =='false'">$(lib-options) --without-context</lib-options>
+      <lib-options Condition="'$(coroutine_library)'       =='true' ">$(lib-options) --with-coroutine</lib-options>
+      <lib-options Condition="'$(coroutine_library)'       =='false'">$(lib-options) --without-coroutine</lib-options>
+      <lib-options Condition="'$(date_time_library)'       =='true' ">$(lib-options) --with-date_time</lib-options>
+      <lib-options Condition="'$(date_time_library)'       =='false'">$(lib-options) --without-date_time</lib-options>
+      <lib-options Condition="'$(exception_library)'       =='true' ">$(lib-options) --with-exception</lib-options>
+      <lib-options Condition="'$(exception_library)'       =='false'">$(lib-options) --without-exception</lib-options>
+      <lib-options Condition="'$(filesystem_library)'      =='true' ">$(lib-options) --with-filesystem</lib-options>
+      <lib-options Condition="'$(filesystem_library)'      =='false'">$(lib-options) --without-filesystem</lib-options>
+      <lib-options Condition="'$(graph_library)'           =='true' ">$(lib-options) --with-graph</lib-options>
+      <lib-options Condition="'$(graph_library)'           =='false'">$(lib-options) --without-graph</lib-options>
+      <lib-options Condition="'$(graph_parallel_library)'  =='true' ">$(lib-options) --with-graph_parallel</lib-options>
+      <lib-options Condition="'$(graph_parallel_library)'  =='false'">$(lib-options) --without-graph_parallel</lib-options>
+      <lib-options Condition="'$(iostreams_library)'       =='true' ">$(lib-options) --with-iostreams</lib-options>
+      <lib-options Condition="'$(iostreams_library)'       =='false'">$(lib-options) --without-iostreams</lib-options>
+      <lib-options Condition="'$(locale_library)'          =='true' ">$(lib-options) --with-locale</lib-options>
+      <lib-options Condition="'$(locale_library)'          =='false'">$(lib-options) --without-locale</lib-options>
+      <lib-options Condition="'$(log_library)'             =='true' ">$(lib-options) --with-log</lib-options>
+      <lib-options Condition="'$(log_library)'             =='false'">$(lib-options) --without-log</lib-options>
+      <lib-options Condition="'$(math_library)'            =='true' ">$(lib-options) --with-math</lib-options>
+      <lib-options Condition="'$(math_library)'            =='false'">$(lib-options) --without-math</lib-options>
+      <lib-options Condition="'$(mpi_library)'             =='true' ">$(lib-options) --with-mpi</lib-options>
+      <lib-options Condition="'$(mpi_library)'             =='false'">$(lib-options) --without-mpi</lib-options>
+      <lib-options Condition="'$(program_options_library)' =='true' ">$(lib-options) --with-program_options</lib-options>
+      <lib-options Condition="'$(program_options_library)' =='false'">$(lib-options) --without-program_options</lib-options>
+      <lib-options Condition="'$(python_library)'          =='true' ">$(lib-options) --with-python</lib-options>
+      <lib-options Condition="'$(python_library)'          =='false'">$(lib-options) --without-python</lib-options>
+      <lib-options Condition="'$(random_library)'          =='true' ">$(lib-options) --with-random</lib-options>
+      <lib-options Condition="'$(random_library)'          =='false'">$(lib-options) --without-random</lib-options>
+      <lib-options Condition="'$(regex_library)'           =='true' ">$(lib-options) --with-regex</lib-options>
+      <lib-options Condition="'$(regex_library)'           =='false'">$(lib-options) --without-regex</lib-options>
+      <lib-options Condition="'$(serialization_library)'   =='true' ">$(lib-options) --with-serialization</lib-options>
+      <lib-options Condition="'$(serialization_library)'   =='false'">$(lib-options) --without-serialization</lib-options>
+      <lib-options Condition="'$(signals_library)'         =='true' ">$(lib-options) --with-signals</lib-options>
+      <lib-options Condition="'$(signals_library)'         =='false'">$(lib-options) --without-signals</lib-options>
+      <lib-options Condition="'$(system_library)'          =='true' ">$(lib-options) --with-system</lib-options>
+      <lib-options Condition="'$(system_library)'          =='false'">$(lib-options) --without-system</lib-options>
+      <lib-options Condition="'$(test_library)'            =='true' ">$(lib-options) --with-test</lib-options>
+      <lib-options Condition="'$(test_library)'            =='false'">$(lib-options) --without-test</lib-options>
+      <lib-options Condition="'$(thread_library)'          =='true' ">$(lib-options) --with-thread</lib-options>
+      <lib-options Condition="'$(thread_library)'          =='false'">$(lib-options) --without-thread</lib-options>
+      <lib-options Condition="'$(timer_library)'           =='true' ">$(lib-options) --with-timer</lib-options>
+      <lib-options Condition="'$(timer_library)'           =='false'">$(lib-options) --without-timer</lib-options>
+      <lib-options Condition="'$(wave_library)'            =='true' ">$(lib-options) --with-wave</lib-options>
+      <lib-options Condition="'$(wave_library)'            =='false'">$(lib-options) --without-wave</lib-options>    
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="GetBoostOptions" Returns="boost-options">
+
+    <PropertyGroup>
+      <!--Configuration Manager -->
+      <boost-options Condition="'$(PlatformArchitecture)'!=''"                    >$(boost-options) address-model=$(PlatformArchitecture)</boost-options>
+      <boost-options Condition="'$(Configuration)'    !=''"                       >$(boost-options)&#32;variant=$(Configuration.ToLower())</boost-options>
+      <!--General-->
+      <boost-options Condition="'$(InitDirOriginal)'  !='$(IntDir)'"              >$(boost-options)&#32;--build-dir="$(IntDir)"</boost-options>
+      <boost-options Condition="'stage\'!='$(OutDir)' and ''!='$(OutDir)'"        >$(boost-options)&#32;--stage-dir="$(OutDir)"</boost-options>
+      <boost-options Condition="'$(PlatformToolset)'=='$(DefaultPlatformToolset)'">$(boost-options)&#32;toolset=msvc</boost-options>
+      <boost-options Condition="'$(PlatformToolset)'!='' And '$(PlatformToolset)'!='$(DefaultPlatformToolset)'">$(boost-options)&#32;$([System.String]::Format('toolset=msvc-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))</boost-options>
+      <boost-options Condition="'$(LinkType)'         !=''"                       >$(boost-options)&#32;link=$(LinkType)</boost-options>
+      <boost-options Condition="'$(RuntimeLinkType)'  !=''"                       >$(boost-options)&#32;runtime-link=$(RuntimeLinkType)</boost-options>
+      <boost-options Condition="'$(ThreadingType)'    !=''"                       >$(boost-options)&#32;threading=$(ThreadingType)</boost-options>
+      <boost-options Condition="'$(BuildType)'        !=''"                       >$(boost-options)&#32;--build-type=$(BuildType)</boost-options>
+      <boost-options Condition="'$(LayoutType)'       !=''"                       >$(boost-options)&#32;--layout=$(LayoutType)</boost-options>
+      <boost-options Condition="'$(RuntimeSupport)'   !=''"                       >$(boost-options)&#32;windows-api=$(RuntimeSupport)</boost-options>
+    </PropertyGroup>
+
+  </Target>
+
+  <Target Name="BuildCommandLine" Returns="BuildCommandLine">
+    <PropertyGroup>
+      <BuildCommandLine>b2.exe address-model=$(PlatformArchitecture) variant=$(Configuration.ToLower()) stage</BuildCommandLine>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="JamToolBuild" Label="Building BJAM engine"
+          Inputs="@(EngineSourceFiles)" 
+          Outputs="$(BoostDir)\b2.exe" >
+    <Error ContinueOnError="false" Text="Engine source files are missing, did you update submodules?" Condition="@(EngineSourceFiles)==''" />
+    <Message Text="Building Engine..." Importance="high" />
+    <Exec Command="call build.bat" WorkingDirectory="$(BoostDir)\tools\build\src\engine\" EnvironmentVariables="@(BuildEnvVars)" />
+    
+    <ItemGroup Label="List all built exe files" >
+      <BJamTools Include="$(BoostDir)\tools\build\src\engine\bin.ntx86\*.exe" Condition="Exists('$(BoostDir)\tools\build\src\engine\bin.ntx86')" />
+      <BJamTools Include="$(BoostDir)\tools\build\src\engine\bin.ntx86_64\*.exe" Condition="Exists('$(BoostDir)\tools\build\src\engine\bin.ntx86_64')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BJamTools)" DestinationFolder="$(BoostDir)\" UseHardlinksIfPossible="true" />
+  </Target>
+
+
+  <Target Label="Populate 'boost' include dir if missing"
+          Name="BoostHeaders" DependsOnTargets="JamToolBuild"
+          Condition="!Exists('$(BoostDir)\boost')" >
+
+    <Message Text="Populating 'boost' include dir..." Importance="high" />
+    <Exec Command="b2.exe headers toolset=msvc"  WorkingDirectory="$(BoostDir)" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
+    <Exec Command="rmdir /s /q bin.v2"  WorkingDirectory="$(BoostDir)" Condition="Exists('$(BoostDir)\bin.v2')"  />
+  </Target>
+
+
+  <!--Standard targets-->
+  
+  <Target Name="Build" DependsOnTargets="JamToolBuild;BoostHeaders;BuildCommandLine;" >
+    <Message Text="Building boost..." Importance="high" />
+    <Exec Command="$(BuildCommandLine) -n -d+2 " WorkingDirectory="$(BoostDir)" EnvironmentVariables="@(BuildEnvVars)" />
+  </Target>
+
+  <Target Name="Rebuild" DependsOnTargets="JamToolBuild;BoostHeaders;BuildCommandLine;">
+    <Message Text="Rebuilding boost..." Importance="high" />
+    <!--<Exec Command="$(BuildCommandLine) -a -n" WorkingDirectory="$(BoostDir)" EnvironmentVariables="@(BuildEnvVars)" />-->
+    <Message Text="Link: '$(Link)'" Importance="high" />
+    <Message Text="CL: '$(CL)'" Importance="high" />
+    <Message Text="ProjectTools: '@(ProjectTools)'" Importance="high" />
+  </Target>
+
+  <Target Name="Clean" DependsOnTargets="JamToolBuild;" >
+    <Message Text="Cleaning boost..." Importance="high" />
+    <Exec Command="b2.exe --clean"  WorkingDirectory="$(BoostDir)" EnvironmentVariables="@(BuildEnvVars)" />
+  </Target>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <RuntimeLibrary                   Condition="'%(ClCompile.RuntimeLibrary)'                == ''">MultiThreadedDebugDll</RuntimeLibrary>
+      <BasicRuntimeChecks               Condition="'%(ClCompile.BasicRuntimeChecks)'            == ''">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization                     Condition="'%(ClCompile.Optimization)'                  == ''">Disabled</Optimization>
+      <MinimalRebuild                   Condition="'%(ClCompile.MinimalRebuild)'                == ''">true</MinimalRebuild>
+      <AssemblerOutput                  Condition="'%(ClCompile.AssemblerOutput)'               == ''">NoListing</AssemblerOutput>
+      <AssemblerListingLocation         Condition="'%(ClCompile.AssemblerListingLocation)'      == ''">$(IntDir)</AssemblerListingLocation>
+      <AcceptableNonZeroExitCodes       Condition="'%(ClCompile.AcceptableNonZeroExitCodes)'    == ''">$(AcceptableNonZeroExitCodes)</AcceptableNonZeroExitCodes>
+      <UndefineAllPreprocessorDefinitions Condition="'%(ClCompile.UndefineAllPreprocessorDefinitions)' == ''">false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation                Condition="'%(ClCompile.BrowseInformation)'             == ''">false</BrowseInformation>
+      <BrowseInformationFile            Condition="'%(ClCompile.BrowseInformationFile)'         == ''">$(IntDir)</BrowseInformationFile>
+      <BasicRuntimeChecks               Condition="'%(ClCompile.BasicRuntimeChecks)'            == ''">Default</BasicRuntimeChecks>
+      <CompileAs                        Condition="'%(ClCompile.CompileAs)'                     == ''">Default</CompileAs>
+      <DisableLanguageExtensions        Condition="'%(ClCompile.DisableLanguageExtensions)'     == ''">false</DisableLanguageExtensions>
+      <ErrorReporting                   Condition="'%(ClCompile.ErrorReporting)'                == ''
+                                                   and '$(BuildingInsideVisualStudio)'          == 'true'">Prompt</ErrorReporting>
+      <ErrorReporting                   Condition="'%(ClCompile.ErrorReporting)'                == ''">Queue</ErrorReporting>
+      <ExpandAttributedSource           Condition="'%(ClCompile.ExpandAttributedSource)'        == ''">false</ExpandAttributedSource>
+      <ExceptionHandling                Condition="'%(ClCompile.ExceptionHandling)'             == ''">Sync</ExceptionHandling>
+      <EnableFiberSafeOptimizations     Condition="'%(ClCompile.EnableFiberSafeOptimizations)'  == ''">false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet     Condition="'%(ClCompile.EnableEnhancedInstructionSet)'  == ''">NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel               Condition="'%(ClCompile.FloatingPointModel)'            == ''">Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope   Condition="'%(ClCompile.ForceConformanceInForLoopScope)'== ''">true</ForceConformanceInForLoopScope>
+      <ForcedIncludeFiles               Condition="'%(ClCompile.ForcedIncludeFiles)'            == ''"></ForcedIncludeFiles>
+      <ForcedUsingFiles                 Condition="'%(ClCompile.ForcedUsingFiles)'              == ''"></ForcedUsingFiles>
+      <GenerateXMLDocumentationFiles    Condition="'%(ClCompile.GenerateXMLDocumentationFiles)' == ''">false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion          Condition="'%(ClCompile.InlineFunctionExpansion)'       == ''">Default</InlineFunctionExpansion>
+      <IntrinsicFunctions               Condition="'%(ClCompile.IntrinsicFunctions)'            == ''">false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath        Condition="'%(ClCompile.IgnoreStandardIncludePath)'     == ''">false</IgnoreStandardIncludePath>
+      <MinimalRebuild                   Condition="'%(ClCompile.MinimalRebuild)'                == '' and
+                                                  ('$(CLRSupport)'                              == '' or
+                                                   '$(CLRSupport)'                              == 'false')">false</MinimalRebuild>
+      <OmitDefaultLibName               Condition="'%(ClCompile.OmitDefaultLibName)'            == ''">false</OmitDefaultLibName>
+      <FavorSizeOrSpeed                 Condition="'%(ClCompile.FavorSizeOrSpeed)'              == ''">Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization         Condition="'%(ClCompile.WholeProgramOptimization)'      == ''">false</WholeProgramOptimization>
+      <Optimization                     Condition="'%(ClCompile.Optimization)'                  == '' and
+                                                   ('%(ClCompile.BasicRuntimeChecks)'           == '' or
+                                                   '%(ClCompile.BasicRuntimeChecks)'            == 'Default')">MaxSpeed</Optimization>
+      <ObjectFileName                   Condition="'%(ClCompile.ObjectFileName)'                == ''">$(IntDir)</ObjectFileName>
+      <CallingConvention                Condition="'%(ClCompile.CallingConvention)'             == '' and
+                                                  ('$(CLRSupport)'                              == '' or
+                                                   '$(CLRSupport)'                              == 'false')">Cdecl</CallingConvention>
+      <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == '' and
+                                                   '$(ConfigurationType)'                       == 'StaticLibrary'">$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == '' and
+                                                   '$(PlatformToolsetVersion)'                  != ''">$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader                Condition="'%(ClCompile.PrecompiledHeader)'             == ''">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile            Condition="'%(ClCompile.PrecompiledHeaderFile)'         == ''">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile      Condition="'%(ClCompile.PrecompiledHeaderOutputFile)'   == ''">$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == ''">$(IntDir)vc140.pdb</ProgramDataBaseFileName>
+      <PreprocessToFile                 Condition="'%(ClCompile.PreprocessToFile)'              == ''">false</PreprocessToFile>
+      <PreprocessKeepComments           Condition="'%(ClCompile.PreprocessKeepComments)'        == ''">false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers    Condition="'%(ClCompile.PreprocessSuppressLineNumbers)' == ''">false</PreprocessSuppressLineNumbers>
+      <ProcessorNumber                  Condition="'$(CL_MPCount)'                              != ''">$(CL_MPCount)</ProcessorNumber>
+      <RuntimeLibrary                   Condition="'%(ClCompile.RuntimeLibrary)'                == ''">MultiThreadedDll</RuntimeLibrary>
+      <ShowIncludes                     Condition="'%(ClCompile.ShowIncludes)'                  == ''">false</ShowIncludes>
+      <SuppressStartupBanner            Condition="'%(ClCompile.SuppressStartupBanner)'         == ''">true</SuppressStartupBanner>
+      <BufferSecurityCheck              Condition="'%(ClCompile.BufferSecurityCheck)'           == ''">true</BufferSecurityCheck>
+      <StructMemberAlignment            Condition="'%(ClCompile.StructMemberAlignment)'         == ''">Default</StructMemberAlignment>
+      <SmallerTypeCheck                 Condition="'%(ClCompile.SmallerTypeCheck)'              == ''">false</SmallerTypeCheck>
+      <TrackerLogDirectory              Condition="'%(ClCompile.TrackerLogDirectory)'           == ''">$(TLogLocation)</TrackerLogDirectory>
+      <MinimalRebuildFromTracking       Condition="'%(ClCompile.MinimalRebuildFromTracking)'    == ''">true</MinimalRebuildFromTracking>
+      <TreatWarningAsError              Condition="'%(ClCompile.TreatWarningAsError)'           == ''">false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType        Condition="'%(ClCompile.TreatWChar_tAsBuiltInType)'     == ''">true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths                     Condition="'%(ClCompile.UseFullPaths)'                  == ''">false</UseFullPaths>
+      <WarningLevel                     Condition="'%(ClCompile.WarningLevel)'                  == ''">Level1</WarningLevel>
+      <XMLDocumentationFileName         Condition="'%(ClCompile.XMLDocumentationFileName)'      == ''">$(IntDir)</XMLDocumentationFileName>
+      <DebugInformationFormat           Condition="'%(ClCompile.DebugInformationFormat)'        == ''">ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  
+  <!-- Property pages -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(ProjectDir)\boost.xml" >
+      <Context>Project</Context>
+    </PropertyPageSchema>
+
+    <PropertyPageSchema Include="cl.xml" />
+    <PropertyPageSchema Include="link.xml" />
+
+    <ProjectTools Include="linkflags" />
+    <ProjectTools Include="cxxflags" />
+  </ItemGroup>
+
+</Project>

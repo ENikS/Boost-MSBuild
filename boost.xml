@@ -5,14 +5,16 @@
                           xmlns:sys="clr-namespace:System;assembly=mscorlib">
   <Rule
         Name="ConfigurationGeneral"
-        DisplayName="General"
-        PageTemplate="generic"
+        DisplayName="Boost"
+        PageTemplate="tool"
         Description="General" >
     
     <Rule.Categories>
       <Category Name="General" DisplayName="General" Description="General" />
-      <Category Name="ProjectDefaults" DisplayName="Project Settings" Description="Project Defaults" />
-      <Category Name="BoostInfo" DisplayName="Boost Info" Description="Boost Library Info" />
+      <Category Name="ProjectDefaults" DisplayName="Options" Description="Project Defaults" />
+      <Category Name="Build" DisplayName="To Build" Description="Libraries Build settings" />
+      <Category Name="All Options" DisplayName="All Options" Subtype="Search" />
+      <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
     </Rule.Categories>
     
     <Rule.DataSource>
@@ -20,6 +22,7 @@
     </Rule.DataSource>
     
     <StringProperty Name="OutDir" DisplayName="Output Directory"
+                    Switch="--stage-dir" Separator="="
                     Description="Specifies a relative path to the output file directory; can include environment variables."
                     Category="General" Default="$(SolutionDir)$(Configuration)\"
                     Subtype="folder"
@@ -29,6 +32,7 @@
       </StringProperty.DataSource>
     </StringProperty>
     <StringProperty Name="IntDir" DisplayName="Intermediate Directory"
+                    Switch="--build-dir" Separator="="
                     Description="Specifies a relative path to the intermediate file directory; can include environment variables."
                     Category="General" Default="$(Configuration)\"
                     Subtype="folder"
@@ -37,7 +41,7 @@
         <DataSource Persistence="ProjectFile" Label="" />
       </StringProperty.DataSource>
     </StringProperty>
-    <StringProperty Name="BuildLogFile" DisplayName="Build Log File"
+    <StringProperty Name="BuildLogFile" DisplayName="Build Log File" IncludeInCommandLine="false"
                     Description="Specifies the build log file to write to when build logging is enabled."
                     F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
                     Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
@@ -46,37 +50,38 @@
         <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path" />
       </StringProperty.DataSource>
     </StringProperty>
-    <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets"
+    <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets" IncludeInCommandLine="true"
+                         Switch="toolset=msvc" Separator="-" 
                          Description="Specifies the toolset used for building the current configuration; If not set, the default toolset is used"
                          F1Keyword="VC.Project.VCConfiguration.PlatformToolset"
                          Category="General" />
     <EnumProperty Name="boost-link" DisplayName="Configuration Type"
                   Description="Whether to build static or shared libraries."
                   Category="ProjectDefaults">
-      <EnumValue Name="shared" Switch=".dll" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" />
-      <EnumValue Name="static" Switch=".lib" DisplayName="Static library" Description="Static Library (.lib)" />
+      <EnumValue Name="shared" Switch="link=shared" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" />
+      <EnumValue Name="static" Switch="link=static" DisplayName="Static library" Description="Static Library (.lib)" />
     </EnumProperty>
     <EnumProperty Name="boost-runtime-link" DisplayName="Link To Runtime Library" 
                   Description="Specify runtime library for linking." Category="ProjectDefaults">
-      <EnumValue Name="shared" Switch=".dll" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" />
-      <EnumValue Name="static" Switch=".lib" DisplayName="Static Libraries " Description="Link to static libraries (.lib)" />
+      <EnumValue Name="shared" Switch="runtime-link=shared" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" />
+      <EnumValue Name="static" Switch="runtime-link=static" DisplayName="Static Libraries " Description="Link to static libraries (.lib)" />
     </EnumProperty>
     <EnumProperty Name="boost-threading" DisplayName="Link To Runtime Library"
                   Description="Whether to build single or multithreaded binaries." Category="ProjectDefaults">
-      <EnumValue Name="single" Switch="single" DisplayName="Single Threaded" Description="Builds Single Threaded binaries" />
-      <EnumValue Name="multi" Switch="multi" DisplayName="Multi Threaded" Description="Builds Multi Threaded binaries" />
+      <EnumValue Name="single" Switch="threading=single" DisplayName="Single Threaded" Description="Builds Single Threaded binaries" />
+      <EnumValue Name="multi" Switch="threading=multi" DisplayName="Multi Threaded" Description="Builds Multi Threaded binaries" />
     </EnumProperty>
     <EnumProperty Name="boost-build-type" DisplayName="Build Type"
                   Description="Build the specified pre-defined set of variations of the libraries." Category="ProjectDefaults">
-      <EnumValue Name="minimal" Switch="minimal" DisplayName="Minimal Build" Description="Builds a minimal set of variants." />
-      <EnumValue Name="complete" Switch="complete" DisplayName="Complete Build" Description="Build all possible variations." />
+      <EnumValue Name="minimal" Switch="--build-type=minimal" DisplayName="Minimal Build" Description="Builds a minimal set of variants." />
+      <EnumValue Name="complete" Switch="--build-type=complete" DisplayName="Complete Build" Description="Build all possible variations." />
     </EnumProperty>
     <EnumProperty Name="boost-layout" DisplayName="Layout"
                   Description="Determine whether to choose library names and header locations such that multiple versions of Boost or multiple compilers can be used on the same system." 
                   Category="ProjectDefaults">
-      <EnumValue Name="versioned" Switch="versioned" DisplayName="Versioned Layout" Description="Names of boost binaries include the Boost version number, name and version of the compiler and encoded build properties." />
-      <EnumValue Name="tagged" Switch="tagged" DisplayName="Tagged Layout" Description="Names of boost binaries include the encoded build properties such as variant and threading, but do not including compiler name and version, or Boost version." />
-      <EnumValue Name="system" Switch="system" DisplayName="System Layout" Description="Binaries names do not include the Boost version number or the name and version number of the compiler." />
+      <EnumValue Name="versioned" Switch="--layout=versioned" DisplayName="Versioned Layout" Description="Names of boost binaries include the Boost version number, name and version of the compiler and encoded build properties." />
+      <EnumValue Name="tagged" Switch="--layout=tagged" DisplayName="Tagged Layout" Description="Names of boost binaries include the encoded build properties such as variant and threading, but do not including compiler name and version, or Boost version." />
+      <EnumValue Name="system" Switch="--layout=system" DisplayName="System Layout" Description="Binaries names do not include the Boost version number or the name and version number of the compiler." />
     </EnumProperty>
     <EnumProperty Name="CharacterSet" DisplayName="Character Set" Visible="false"
                   Description="Tells the compiler to use the specified character set; aids in localization issues."
@@ -103,21 +108,47 @@
     </EnumProperty>
     <EnumProperty Name="boost-windows-api" DisplayName="Windows Runtime support" 
                   Description="Specify which Windows API set to target." Category="ProjectDefaults" >
-      <EnumValue Name="desktop" Switch="desktop" DisplayName="Windows Desktop" Description="Regular Windows binaries" />
-      <EnumValue Name="store"   Switch="store"   DisplayName="Windows Store" Description="Binaries for Windows Store"/>
-      <EnumValue Name="phone"   Switch="phone"   DisplayName="Windows Phone" Description="Binaries for Windows Phone" />
+      <EnumValue Name="desktop" Switch="windows-api=desktop" DisplayName="Windows Desktop" Description="Regular Windows binaries" />
+      <EnumValue Name="store"   Switch="windows-api=store"   DisplayName="Windows Store" Description="Binaries for Windows Store"/>
+      <EnumValue Name="phone"   Switch="windows-api=phone"   DisplayName="Windows Phone" Description="Binaries for Windows Phone" />
     </EnumProperty>
-    <StringProperty Name="BoostVersion" DisplayName="Library Version"
-                  Description="Specifies the version of the boost library."
-                  Category="BoostInfo"
-                  ReadOnly="true"
-                  Visible="false" />
-    <StringProperty Name="BoostDir" DisplayName="BOOST_ROOT"
-                  Description="Location of boost library."
-                  Category="BoostInfo"
-                  Visible="false" 
-                  ReadOnly="true" />
-    <StringProperty Name="boost-extra" DisplayName="Additional Options" Description="Additional Options." Category="ProjectDefaults" />
+
+    <!--Libraries-->
+    <BoolProperty Switch="--with-atomic" ReverseSwitch="--without-atomic" Name="atomic_library" DisplayName="atomic" Description="Build, stage, or install 'atomic' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/1_57_0/doc/html/atomic.html"/>
+    <BoolProperty Switch="--with-chrono" ReverseSwitch="--without-chrono" Name="chrono_library" DisplayName="chrono" Description="Build, stage, or install 'chrono' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-container" ReverseSwitch="--without-container" Name="container_library" DisplayName="container" Description="Build, stage, or install 'container' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-context" ReverseSwitch="--without-context" Name="context_library" DisplayName="context" Description="Build, stage, or install 'context' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-coroutine" ReverseSwitch="--without-coroutine" Name="coroutine_library" DisplayName="coroutine" Description="Build, stage, or install 'coroutine' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-date_time" ReverseSwitch="--without-date_time" Name="date_time_library" DisplayName="date_time" Description="Build, stage, or install 'date_time' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-exception" ReverseSwitch="--without-exception" Name="exception_library" DisplayName="exception" Description="Build, stage, or install 'exception' library." Category="Build" HelpUrl="" />
+    <BoolProperty Switch="--with-filesystem" ReverseSwitch="--without-filesystem" Name="filesystem_library" DisplayName="filesystem" Description="Build, stage, or install 'filesystem' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-graph" ReverseSwitch="--without-graph" Name="graph_library" DisplayName="graph" Description="Build, stage, or install 'graph' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-graph_parallel" ReverseSwitch="--without-graph_parallel" Name="graph_parallel_library" DisplayName="graph_parallel" Description="Build, stage, or install 'graph_parallel' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-iostreams" ReverseSwitch="--without-iostreams" Name="iostreams_library" DisplayName="iostreams" Description="Build, stage, or install 'iostreams' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-locale" ReverseSwitch="--without-locale" Name="locale_library" DisplayName="locale" Description="Build, stage, or install 'locale' library." Category="Build" HelpUrl="" />
+    <BoolProperty Switch="--with-log" ReverseSwitch="--without-log" Name="log_library" DisplayName="log" Description="Build, stage, or install 'log' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-math" ReverseSwitch="--without-math" Name="math_library" DisplayName="math" Description="Build, stage, or install 'math' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-mpi" ReverseSwitch="--without-mpi" Name="mpi_library" DisplayName="mpi" Description="Build, stage, or install 'mpi' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-program_options" ReverseSwitch="--without-program_options" Name="program_options_library" DisplayName="program_options" Description="Build, stage, or install 'program_options' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-python" ReverseSwitch="--without-python" Name="python_library" DisplayName="python" Description="Build, stage, or install 'python' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-random" ReverseSwitch="--without-random" Name="random_library" DisplayName="random" Description="Build, stage, or install 'random' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-regex" ReverseSwitch="--without-regex" Name="regex_library" DisplayName="regex" Description="Build, stage, or install 'regex' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-serialization" ReverseSwitch="--without-serialization" Name="serialization_library" DisplayName="serialization" Description="Build, stage, or install 'serialization' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-signals" ReverseSwitch="--without-signals" Name="signals_library" DisplayName="signals" Description="Build, stage, or install 'signals' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-system" ReverseSwitch="--without-system" Name="system_library" DisplayName="system" Description="Build, stage, or install 'system' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-test" ReverseSwitch="--without-test" Name="test_library" DisplayName="test" Description="Build, stage, or install 'test' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-thread" ReverseSwitch="--without-thread" Name="thread_library" DisplayName="thread" Description="Build, stage, or install 'thread' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-timer" ReverseSwitch="--without-timer" Name="timer_library" DisplayName="timer" Description="Build, stage, or install 'timer' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-wave" ReverseSwitch="--without-wave" Name="wave_library" DisplayName="wave" Description="Build, stage, or install 'wave' library." Category="Build" HelpUrl=""/>
+    <!--Command Line support-->
+    <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage" />
+    <IntProperty Name="PlatformArchitecture" DisplayName="Platform Architecture" Description="Platform Architecture." Category="General" Switch="address-model" Separator="=" Visible="false" IncludeInCommandLine="true" ReadOnly="true" />
+    <EnumProperty Name="Configuration" DisplayName="Build Configuration"
+                  Description="Build Configuration." Category="General"
+                  Visible="false" IncludeInCommandLine="true" ReadOnly="true">
+      <EnumValue Name="Release" Switch="variant=release" DisplayName="Release" Description="Release" />
+      <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug"/>
+    </EnumProperty>
   </Rule>
 </ProjectSchemaDefinitions>
 

@@ -20,32 +20,24 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9cd23c68-ba74-4c50-924f-2a609c25b7a0}</ProjectGuid>
+    <Keyword>MakeProj</Keyword>
+    <ConfigurationType>Makefile</ConfigurationType>
     <ProjectName>boost</ProjectName>
     <BoostDir>$(BOOST_ROOT)</BoostDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <ImportGroup Label="ExtensionSettings" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <cxxflags>
-      <ErrorReporting>Prompt</ErrorReporting>
-    </cxxflags>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <cxxflags>
-      <ErrorReporting>Prompt</ErrorReporting>
-    </cxxflags>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <cxxflags>
-      <ErrorReporting>Prompt</ErrorReporting>
-    </cxxflags>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <cxxflags>
-      <ErrorReporting>Prompt</ErrorReporting>
-    </cxxflags>
-  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>  
+  <PropertyGroup Label="Import Settings">
+    <UseDefaultProjectTools>false</UseDefaultProjectTools>
+    <UseDefaultPropertyPageSchemas>false</UseDefaultPropertyPageSchemas>
+    <UseDefaultGeneralPropertyPageSchema>false</UseDefaultGeneralPropertyPageSchema>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="boost.targets" />
   </ImportGroup>

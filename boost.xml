@@ -45,7 +45,7 @@
                          Category="General" />
     <StringProperty Name="BoostDir" DisplayName="Boost Root Directory" IncludeInCommandLine="false"
                     Description="Specifies Boost Root Directory."
-                    ReadOnly="true"
+                    ReadOnly="false"
                     Category="General"
                     Subtype="folder" />
 

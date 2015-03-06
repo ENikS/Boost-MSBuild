@@ -69,11 +69,37 @@ Copyright (C)
   </ItemGroup>
 
 
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Disambiguate directories
+  ///////////////////////////////////////////////////////////-->
   <Target Name="GetDirs" Returns="dirs-options">
     <PropertyGroup>
       <dirs-options Condition="'$(IntDir)'!=''"                   >--build-dir=&#34;$([System.IO.Path]::GetFullPath("$(IntDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;</dirs-options>
       <dirs-options Condition="'$(OutDir)'!=''">$(dirs-options)&#32;--stagedir=&#34;$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;</dirs-options>
     </PropertyGroup>
+  </Target>
+
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Prepare Environment Variables
+  ///////////////////////////////////////////////////////////-->
+  <Target Name="GetEnvVars" Returns="env-vars">
+    <ItemGroup>
+      <env-vars Condition="'$(enable-compression)'=='false'" Include="NO_COMPRESSION=1" />
+      <env-vars Condition="'$(enable-bzip2)'      =='false'" Include="NO_BZIP2=1" />
+      <env-vars Condition="'$(enable-zlib)'       =='false'" Include="NO_ZZLIB=1" />
+      <env-vars Condition="'$(bzip2-binary)'      !=''"      Include="BZIP2_BINARY=$([System.IO.Path]::GetFullPath($(bzip2-binary)))" />
+      <env-vars Condition="'$(bzip2-include)'     !=''"      Include="BZIP2_INCLUDE=$([System.IO.Path]::GetFullPath($(bzip2-include)))" />
+      <env-vars Condition="'$(bzip2-libpath)'     !=''"      Include="BZIP2_LIBPATH=$([System.IO.Path]::GetFullPath($(bzip2-libpath)))" />
+      <env-vars Condition="'$(bzip2-source)'      !=''"      Include="BZIP2_SOURCE=$([System.IO.Path]::GetFullPath($(bzip2-source)))" />
+      <env-vars Condition="'$(zlib-binary)'       !=''"      Include="ZLIB_BINARY=$([System.IO.Path]::GetFullPath($(zlib-binary)))" />
+      <env-vars Condition="'$(zlib-include)'      !=''"      Include="ZLIB_INCLUDE=$([System.IO.Path]::GetFullPath($(zlib-include)))" />
+      <env-vars Condition="'$(zlib-libpath)'      !=''"      Include="ZLIB_LIBPATH=$([System.IO.Path]::GetFullPath($(zlib-libpath)))" />
+      <env-vars Condition="'$(zlib-source)'       !=''"      Include="ZLIB_SOURCE=$([System.IO.Path]::GetFullPath($(zlib-source)))" />
+      <env-vars Include="@(BuildEnvVars)" />
+    </ItemGroup>
   </Target>
   
   
@@ -186,22 +212,27 @@ Copyright (C)
     ///////////////////////////////////////////////////////////
     // BUILD TARGET
     /////////////////////////////////////////////////////////// -->
-  <Target Name="Build" DependsOnTargets="GetDirs;PrepareForBoostBuild;BuildJamTool;" >
+  <Target Name="Build" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;" >
     <Error Condition="$(boost-options.Substring(0, 12))!='toolset=msvc'" Text="Invalid boost options: 'boost-options' element has been overwritten in one of the targets." ContinueOnError="false" />
     <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe $(boost-options) $(dirs-options)"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="Exists('$(BoostDir)\boost')" />
+    <Exec Command="b2.exe $(boost-options) $(dirs-options)"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
   </Target>
 
   <!--
     ///////////////////////////////////////////////////////////
     // REBUILD TARGET
     /////////////////////////////////////////////////////////// -->
-  <Target Name="Rebuild" DependsOnTargets="GetDirs;PrepareForBoostBuild;BuildJamTool;">
+  <Target Name="Rebuild" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;">
     <Error Condition="$(boost-options.Substring(0, 12))!='toolset=msvc'" Text="Invalid boost options: 'boost-options' element has been overwritten in one of the targets." ContinueOnError="false" />
     <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe $(boost-options) $(dirs-options) -a"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" />
+    <Exec Command="b2.exe $(boost-options) $(dirs-options) -a"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" />
+  <!--
+    <Message Text="Building : $(dirs-options)" Importance="high" />
+    <Exec Command="SET" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" />
+  -->
   </Target>
-
+  
+  
   <!--
     ///////////////////////////////////////////////////////////
     // CLEAN TARGET

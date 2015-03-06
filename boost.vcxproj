@@ -41,7 +41,7 @@
     <PlatformToolset>v120</PlatformToolset>
     <stage_library>true</stage_library>
   </PropertyGroup>
-  <Import Condition="'$(VisualStudioVersion)'=='12.0'" Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />

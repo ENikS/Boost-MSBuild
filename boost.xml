@@ -13,6 +13,7 @@
       <Category Name="General" DisplayName="General" Description="General" />
       <Category Name="ProjectDefaults" DisplayName="Options" Description="Project Defaults" />
       <Category Name="Build" DisplayName="To Build" Description="Libraries Build settings" />
+      <Category Name="Compression" DisplayName="Compression" Description="Location of ZLib and BZip libraries" />
       <Category Name="All Options" DisplayName="All Options" Subtype="Search" />
       <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
     </Rule.Categories>
@@ -144,6 +145,54 @@
       <EnumValue Name="Release" Switch="variant=release" DisplayName="Release" Description="Release" />
       <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug"/>
     </EnumProperty>
+    <!--Compression-->
+    <BoolProperty ReverseSwitch="-sNO_COMPRESSION" Name="enable-compression" DisplayName="Enable Compression" Description="Enable support for compression filters." Category="Compression" 
+                  HelpUrl="http://www.boost.org/doc/libs/1_57_0/libs/iostreams/doc/classes/bzip2.html#installation"/>
+    <BoolProperty ReverseSwitch="-sNO_BZIP2"       Name="enable-bzip2"       DisplayName="Enable BZip2"       Description="Enable support for BZip2 filters." Category="Compression" HelpUrl=""/>
+    <StringProperty Name="bzip2-binary" DisplayName="Name of the LIBBZ2 binary" Category="Compression"
+                    Switch="-sBZIP2_BINARY" Separator="=" Default="libbz2"
+                    Description="Name of the libbz2 binary, not including the file extension. If linking with a dynamic build of libbz2, specify the name of the import library."  />
+
+    <StringProperty Name="bzip2-include" DisplayName="LIBBZ2 Headers" Category="Compression"
+                    Switch="-sBZIP2_INCLUDE" Separator="=" Default="$(bzip2-source)"
+                    Description="Path to the libbz2 headers, if they're not in a location where they'll be found automatically."
+                    Subtype="folder"
+                    HelpUrl="" />
+
+    <StringProperty Name="bzip2-libpath" DisplayName="LIBBZ2 Binary" Category="Compression"
+                    Switch="-sBZIP2_LIBPATH" Separator="="
+                    Description="Path to the libbz2 binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of libbz2, specify the path to the import library."
+                    Subtype="folder"
+                    HelpUrl="" />
+
+    <StringProperty Name="bzip2-source" DisplayName="LIBBZ2 Source" Category="Compression"
+                    Switch="-sBZIP2_SOURCE" Separator="="
+                    Description="Path to the libbz2 source files, if they're not in a location where they'll be found automatically."
+                    Subtype="folder"
+                    HelpUrl="" />
+
+    <BoolProperty ReverseSwitch="-sNO_ZZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression" HelpUrl=""/>
+    <StringProperty Name="zlib-binary" DisplayName="Name of the ZLIB binary" Category="Compression"
+                    Switch="-sZLIB_BINARY" Separator="=" Default="zdll"
+                    Description="Name of the zlib binary, not including the file extension. If linking with a dynamic build of zlib, specify the name of the import library."  />
+
+    <StringProperty Name="zlib-include" DisplayName="ZLIB Headers" Category="Compression"
+                    Switch="-sZLIB_INCLUDE" Separator="=" Default="$(zlib-source)"
+                    Description="Path to the zlib headers, if they're not in a location where they'll be found automatically."
+                    Subtype="folder"
+                    HelpUrl="" />
+
+    <StringProperty Name="zlib-libpath" DisplayName="ZLIB Binary" Category="Compression"
+                    Switch="-sZLIB_LIBPATH" Separator="="
+                    Description="Path to the zlib binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of zlib, specify the path to the import library."
+                    Subtype="folder"
+                    HelpUrl="" />
+
+    <StringProperty Name="zlib-source" DisplayName="ZLIB Source" Category="Compression"
+                    Switch="-sZLIB_SOURCE" Separator="="
+                    Description="Path to the zlib source files, if they're not in a location where they'll be found automatically."
+                    Subtype="folder"
+                    HelpUrl="" />
   </Rule>
 </ProjectSchemaDefinitions>
 

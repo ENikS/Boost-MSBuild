@@ -20,41 +20,35 @@
     <Rule.DataSource>
       <DataSource Persistence="ProjectFile" Label="Configuration" />
     </Rule.DataSource>
-    
+
     <StringProperty Name="OutDir" DisplayName="Output Directory"
                     Switch="--stage-dir" Separator="="
                     Description="Specifies a relative path to the output file directory; can include environment variables."
                     Category="General" Default="$(SolutionDir)$(Configuration)\"
                     Subtype="folder"
-                    F1Keyword="VC.Project.VCConfiguration.OutputDirectory">
-      <StringProperty.DataSource>
-        <DataSource Persistence="ProjectFile" Label="" />
-      </StringProperty.DataSource>
-    </StringProperty>
+                    F1Keyword="VC.Project.VCConfiguration.OutputDirectory" />
     <StringProperty Name="IntDir" DisplayName="Intermediate Directory"
                     Switch="--build-dir" Separator="="
                     Description="Specifies a relative path to the intermediate file directory; can include environment variables."
                     Category="General" Default="$(Configuration)\"
                     Subtype="folder"
-                    F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory">
-      <StringProperty.DataSource>
-        <DataSource Persistence="ProjectFile" Label="" />
-      </StringProperty.DataSource>
-    </StringProperty>
+                    F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory" />
     <StringProperty Name="BuildLogFile" DisplayName="Build Log File" IncludeInCommandLine="false"
                     Description="Specifies the build log file to write to when build logging is enabled."
                     F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
                     Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
-                    Subtype="file">
-      <StringProperty.DataSource>
-        <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path" />
-      </StringProperty.DataSource>
-    </StringProperty>
+                    Subtype="file" />
     <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets" IncludeInCommandLine="true"
                          Switch="toolset=msvc" Separator="-" 
                          Description="Specifies the toolset used for building the current configuration; If not set, the default toolset is used"
                          F1Keyword="VC.Project.VCConfiguration.PlatformToolset"
                          Category="General" />
+    <StringProperty Name="BoostDir" DisplayName="Boost Root Directory" IncludeInCommandLine="false"
+                    Description="Specifies Boost Root Directory."
+                    ReadOnly="true"
+                    Category="General"
+                    Subtype="folder" />
+
     <EnumProperty Name="boost-link" DisplayName="Configuration Type"
                   Description="Whether to build static or shared libraries."
                   Category="ProjectDefaults">
@@ -112,6 +106,7 @@
       <EnumValue Name="store"   Switch="windows-api=store"   DisplayName="Windows Store" Description="Binaries for Windows Store"/>
       <EnumValue Name="phone"   Switch="windows-api=phone"   DisplayName="Windows Phone" Description="Binaries for Windows Phone" />
     </EnumProperty>
+    <BoolProperty Switch="stage" Name="stage_library" DisplayName="Stage" Description="Install library files here Default; ./stagey." Category="ProjectDefaults" HelpUrl=""/>
 
     <!--Libraries-->
     <BoolProperty Switch="--with-atomic" ReverseSwitch="--without-atomic" Name="atomic_library" DisplayName="atomic" Description="Build, stage, or install 'atomic' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/1_57_0/doc/html/atomic.html"/>

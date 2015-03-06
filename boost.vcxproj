@@ -23,15 +23,50 @@
     <Keyword>MakeProj</Keyword>
     <ConfigurationType>Makefile</ConfigurationType>
     <ProjectName>boost</ProjectName>
-    <BoostDir>$(BOOST_ROOT)</BoostDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PlatformToolset>v120</PlatformToolset>
+    <BoostDir>..\boost</BoostDir>
+    <OutDir>..\Temp</OutDir>
+    <stage_library>true</stage_library>
+    <boost-build-type>minimal</boost-build-type>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PlatformToolset>v120</PlatformToolset>
+    <BoostDir>..\boost</BoostDir>
+    <OutDir>..\Temp</OutDir>
+    <stage_library>true</stage_library>
+    <boost-build-type>minimal</boost-build-type>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformToolset>v120</PlatformToolset>
+    <BoostDir>..\boost</BoostDir>
+    <stage_library>true</stage_library>
+    <boost-build-type>minimal</boost-build-type>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformToolset>v120</PlatformToolset>
+    <BoostDir>..\boost</BoostDir>
+    <stage_library>true</stage_library>
+    <boost-build-type>minimal</boost-build-type>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\Temp</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\Temp</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  </PropertyGroup>
   <ItemDefinitionGroup>
-  </ItemDefinitionGroup>  
+  </ItemDefinitionGroup>
   <PropertyGroup Label="Import Settings">
     <UseDefaultProjectTools>false</UseDefaultProjectTools>
     <UseDefaultPropertyPageSchemas>false</UseDefaultPropertyPageSchemas>

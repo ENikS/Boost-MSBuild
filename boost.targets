@@ -13,38 +13,93 @@ Copyright (C)
 -->
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
-  <PropertyGroup Label="Build Options">
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Local variables
+  ///////////////////////////////////////////////////////////-->
+  <PropertyGroup Label="Defaults">
     <boost-options />
+    <BoostDir Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
   </PropertyGroup>
-  
-  <ItemGroup Label="Local difinitions">
-    <BuildEnvVars Include="VS_UNICODE_OUTPUT=" />
-    <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.h" />
-    <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.c" />
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Resolving path to BOOST
+  ///////////////////////////////////////////////////////////-->
+  <ItemGroup Condition="'$(BoostDir)'==''" >
+    <Jamroot Include="$(ProjectDir)*/Jamroot" />
   </ItemGroup>
 
-  <Target Name="PrepareForBoostBuild" Label="Prepare boost build options">
+  <PropertyGroup Condition="'$(BoostDir)'==''">
+    <JamrootDir>@(Jamroot)</JamrootDir>
+    <BoostDir>$([System.IO.Path]::GetDirectoryName($(JamrootDir)).TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
+    <BoostDir Label="Check if BOOST_ROOT set"             >$(BOOST_ROOT.TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
+    <BoostDir Label="Check if Jamroot file in local dir"
+              Condition="'$(BoostDir)'=='' And 
+                           Exists('$(ProjectDir)Jamroot')">$(ProjectDir.TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
+    <BoostDir Label="Check if Jamroot file in ./.. dir"
+              Condition="'$(BoostDir)'=='' And 
+                           Exists('$(ProjectDir)..\Jamroot')">$([System.IO.Path]::GetFullPath("$(ProjectDir)..\").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
+    <BoostDir Label="Check if Jamroot file in ./../.. dir"
+              Condition="'$(BoostDir)'=='' And 
+                           Exists('$(ProjectDir)..\..\Jamroot')">$([System.IO.Path]::GetFullPath("$(ProjectDir)..\..\").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
+  </PropertyGroup>
+
+  <ItemGroup Label="Environment Variables set during command execution">
+    <BuildEnvVars Include="VS_UNICODE_OUTPUT=" />
+  </ItemGroup>
+
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // UI Property pages
+  ///////////////////////////////////////////////////////////-->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(ProjectDir)\boost.xml" >
+      <Context>Project</Context>
+    </PropertyPageSchema>
+
+    <PropertyPageSchema Include="cl.xml" />
+    <PropertyPageSchema Include="link.xml" />
+
+    <ProjectTools Include="ConfigurationGeneral" />
+    <ProjectTools Include="linkflags" />
+    <ProjectTools Include="cxxflags" />
+  </ItemGroup>
+
+
+  <Target Name="GetDirs" Returns="dirs-options">
     <PropertyGroup>
+      <dirs-options Condition="'$(IntDir)'!=''"                   >--build-dir=&#34;$([System.IO.Path]::GetFullPath("$(IntDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;</dirs-options>
+      <dirs-options Condition="'$(OutDir)'!=''">$(dirs-options)&#32;--stagedir=&#34;$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;</dirs-options>
+    </PropertyGroup>
+  </Target>
+  
+  
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Prepare command line options for build command
+  ///////////////////////////////////////////////////////////-->
+  <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" >
+    <Error ContinueOnError="false" Text="Boost Library not found." Condition="'$(BoostDir)'==''" />
+    <Error Condition="!Exists('$(BoostDir)\Jamroot')" Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" ContinueOnError="false" />
+
+    <PropertyGroup Label="Set all build options">
       <!--Toolset-->
       <boost-options>toolset=msvc</boost-options>
-      <boost-options Condition="'$(PlatformToolset)'!='' And 
-                                '$(PlatformToolset)'!='$(DefaultPlatformToolset)'">$(boost-options)$([System.String]::Format('-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))</boost-options>
+      <boost-options Condition="'$(PlatformToolset)'!=''"              >$(boost-options)$([System.String]::Format('-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))</boost-options>
       <!--Configuration Manager-->
       <boost-options>$(boost-options)&#32;address-model=$(PlatformArchitecture)&#32;variant=$(Configuration.ToLower())</boost-options>
-      <!--General-->
-      <boost-options Condition="'$(OutDir)'!='stage\' and 
-                                '$(OutDir)'!=''"                       >$(boost-options)&#32;--stage-dir="$(OutDir)"</boost-options>
-      <boost-options Condition="'$(IntDir)'!=''"                       >$(boost-options)&#32;--build-dir="$(IntDir)"</boost-options>
-      <!--Build Settings-->
-      <boost-options Condition="'$(boost-link)'            !=''"       >$(boost-options)&#32;link=$(boost-link)</boost-options>
-      <boost-options Condition="'$(boost-runtime-link)'    !=''"       >$(boost-options)&#32;runtime-link=$(boost-runtime-link)</boost-options>
-      <boost-options Condition="'$(boost-threading)'       !=''"       >$(boost-options)&#32;threading=$(boost-threading)</boost-options>
-      <boost-options Condition="'$(boost-build-type)'      !=''"       >$(boost-options)&#32;--build-type=$(boost-build-type)</boost-options>
-      <boost-options Condition="'$(boost-layout)'          !=''"       >$(boost-options)&#32;--layout=$(boost-layout)</boost-options>
-      <boost-options Condition="'$(boost-windows-api)'     !=''"       >$(boost-options)&#32;windows-api=$(boost-windows-api)</boost-options>
-      <boost-options Condition="'$(boost-build-type)'      !='minimal'">$(boost-options)&#32;stage"</boost-options>
-      <boost-options Condition="'$(AdditionalOptions)'     !=''"       >$(boost-options)&#32;$(AdditionalOptions)</boost-options>
+      <!--Build Settings-->                                  
+      <boost-options Condition="'$(boost-link)'              !=''"    >$(boost-options)&#32;link=$(boost-link)</boost-options>
+      <boost-options Condition="'$(boost-runtime-link)'      !=''"    >$(boost-options)&#32;runtime-link=$(boost-runtime-link)</boost-options>
+      <boost-options Condition="'$(boost-threading)'         !=''"    >$(boost-options)&#32;threading=$(boost-threading)</boost-options>
+      <boost-options Condition="'$(boost-build-type)'        !=''"    >$(boost-options)&#32;--build-type=$(boost-build-type)</boost-options>
+      <boost-options Condition="'$(boost-layout)'            !=''"    >$(boost-options)&#32;--layout=$(boost-layout)</boost-options>
+      <boost-options Condition="'$(boost-windows-api)'       !=''"    >$(boost-options)&#32;windows-api=$(boost-windows-api)</boost-options>
+      <boost-options Condition="'$(AdditionalOptions)'       !=''"    >$(boost-options)&#32;$(AdditionalOptions)</boost-options>
+      <boost-options Condition="'$(stage_library)'           =='true'">$(boost-options)&#32;stage</boost-options>
       <!--Libraries-->
       <boost-options Condition="'$(atomic_library)'          =='true' ">$(boost-options)&#32;--with-atomic</boost-options>
       <boost-options Condition="'$(chrono_library)'          =='true' ">$(boost-options)&#32;--with-chrono</boost-options>
@@ -102,14 +157,22 @@ Copyright (C)
   </Target>
 
 
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Build Jamfile Build Tool "B2.EXE"
+  ///////////////////////////////////////////////////////////-->
+  <ItemGroup Label="Engine source files">
+    <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.h" />
+    <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.c" />
+  </ItemGroup>
   <Target Name="BuildJamTool" Label="Building BJAM engine"
           Inputs="@(EngineSourceFiles)" 
           Outputs="$(BoostDir)\b2.exe" >
-    <Error ContinueOnError="false" Text="Engine source files are missing, did you update submodules?" Condition="@(EngineSourceFiles)==''" />
-    <Message Text="Building Engine..." Importance="high" />
-    <Exec Command="call build.bat" WorkingDirectory="$(BoostDir)\tools\build\src\engine\" EnvironmentVariables="@(BuildEnvVars)" />
     
-    <ItemGroup Label="List all built exe files" >
+    <Error ContinueOnError="false" Text="Engine source files are missing, did you update submodules?" Condition="@(EngineSourceFiles)==''" />
+    <Message Text="Building Engine..." />
+    <Exec Command="call build.bat" WorkingDirectory="$(BoostDir)\tools\build\src\engine\" EnvironmentVariables="@(BuildEnvVars)" />
+    <ItemGroup Label="List and copy all built exe files" >
       <BJamTools Include="$(BoostDir)\tools\build\src\engine\bin.ntx86\*.exe" Condition="Exists('$(BoostDir)\tools\build\src\engine\bin.ntx86')" />
       <BJamTools Include="$(BoostDir)\tools\build\src\engine\bin.ntx86_64\*.exe" Condition="Exists('$(BoostDir)\tools\build\src\engine\bin.ntx86_64')" />
     </ItemGroup>
@@ -117,134 +180,35 @@ Copyright (C)
   </Target>
 
 
-  <Target Name="BoostHeaders" DependsOnTargets="BuildJamTool"
-          Label="Populate 'boost' include dir if missing"
-          Condition="!Exists('$(BoostDir)\boost')" >
-    <PropertyGroup>
-      <CommandLine>b2.exe toolset=msvc headers  --build-dir="$(IntDir)"</CommandLine>
-    </PropertyGroup>
-    <Message Text="Populating 'boost' include dir..." Importance="high" />
-    <Exec Command="$(CommandLine)"  WorkingDirectory="$(BoostDir)" EnvironmentVariables="@(BuildEnvVars)" />
-  </Target>
-
-
   <!--Standard targets-->
-  
-  <Target Name="Build" DependsOnTargets="BuildJamTool;BoostHeaders;PrepareForBoostBuild;" >
+
+  <!--
+    ///////////////////////////////////////////////////////////
+    // BUILD TARGET
+    /////////////////////////////////////////////////////////// -->
+  <Target Name="Build" DependsOnTargets="GetDirs;PrepareForBoostBuild;BuildJamTool;" >
     <Error Condition="$(boost-options.Substring(0, 12))!='toolset=msvc'" Text="Invalid boost options: 'boost-options' element has been overwritten in one of the targets." ContinueOnError="false" />
-    <PropertyGroup>
-      <CommandLine>b2.exe $(boost-options)</CommandLine>
-    </PropertyGroup>
-    <Message Text="CommandLine : $(CommandLine)" Importance="high" />
-
-    <Message Text="Building boost..." Importance="high" />
-    <Exec Command="$(CommandLine)" WorkingDirectory="$(BoostDir)" EnvironmentVariables="@(BuildEnvVars)" />
+    <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
+    <Exec Command="b2.exe $(boost-options) $(dirs-options)"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="Exists('$(BoostDir)\boost')" />
   </Target>
 
-  <Target Name="Rebuild" DependsOnTargets="BuildJamTool;BoostHeaders;PrepareForBoostBuild;">
+  <!--
+    ///////////////////////////////////////////////////////////
+    // REBUILD TARGET
+    /////////////////////////////////////////////////////////// -->
+  <Target Name="Rebuild" DependsOnTargets="GetDirs;PrepareForBoostBuild;BuildJamTool;">
     <Error Condition="$(boost-options.Substring(0, 12))!='toolset=msvc'" Text="Invalid boost options: 'boost-options' element has been overwritten in one of the targets." ContinueOnError="false" />
-    <PropertyGroup>
-      <CommandLine>b2.exe $(boost-options)</CommandLine>
-    </PropertyGroup>
-    
-    <Message Text="CommandLine : $(CommandLine)" Importance="high" />
-
-    <Message Text="Rebuilding boost..." Importance="high" />
-    <!--<Exec Command="b2.exe $(boost-options) -a" WorkingDirectory="$(BoostDir)" EnvironmentVariables="@(BuildEnvVars)" />-->
+    <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
+    <Exec Command="b2.exe $(boost-options) $(dirs-options) -a"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" />
   </Target>
 
-  <Target Name="Clean" DependsOnTargets="BuildJamTool;PrepareForBoostBuild" >
-    <PropertyGroup>
-      <CommandLine>b2.exe --stage-dir="$(OutDir) --build-dir="$(IntDir) --clean</CommandLine>
-    </PropertyGroup>
-    <Message Text="Cleaning boost..." Importance="high" />
-    <Exec Command="$(CommandLine)"  WorkingDirectory="$(BoostDir)" EnvironmentVariables="@(BuildEnvVars)" />
+  <!--
+    ///////////////////////////////////////////////////////////
+    // CLEAN TARGET
+    /////////////////////////////////////////////////////////// -->
+  <Target Name="Clean" DependsOnTargets="GetDirs;BuildJamTool;" >
+    <Exec Command="b2.exe toolset=msvc $(dirs-options) --clean"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" IgnoreExitCode="true" />
   </Target>
 
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <RuntimeLibrary                   Condition="'%(ClCompile.RuntimeLibrary)'                == ''">MultiThreadedDebugDll</RuntimeLibrary>
-      <BasicRuntimeChecks               Condition="'%(ClCompile.BasicRuntimeChecks)'            == ''">EnableFastChecks</BasicRuntimeChecks>
-      <Optimization                     Condition="'%(ClCompile.Optimization)'                  == ''">Disabled</Optimization>
-      <MinimalRebuild                   Condition="'%(ClCompile.MinimalRebuild)'                == ''">true</MinimalRebuild>
-      <AssemblerOutput                  Condition="'%(ClCompile.AssemblerOutput)'               == ''">NoListing</AssemblerOutput>
-      <AssemblerListingLocation         Condition="'%(ClCompile.AssemblerListingLocation)'      == ''">$(IntDir)</AssemblerListingLocation>
-      <AcceptableNonZeroExitCodes       Condition="'%(ClCompile.AcceptableNonZeroExitCodes)'    == ''">$(AcceptableNonZeroExitCodes)</AcceptableNonZeroExitCodes>
-      <UndefineAllPreprocessorDefinitions Condition="'%(ClCompile.UndefineAllPreprocessorDefinitions)' == ''">false</UndefineAllPreprocessorDefinitions>
-      <BrowseInformation                Condition="'%(ClCompile.BrowseInformation)'             == ''">false</BrowseInformation>
-      <BrowseInformationFile            Condition="'%(ClCompile.BrowseInformationFile)'         == ''">$(IntDir)</BrowseInformationFile>
-      <BasicRuntimeChecks               Condition="'%(ClCompile.BasicRuntimeChecks)'            == ''">Default</BasicRuntimeChecks>
-      <CompileAs                        Condition="'%(ClCompile.CompileAs)'                     == ''">Default</CompileAs>
-      <DisableLanguageExtensions        Condition="'%(ClCompile.DisableLanguageExtensions)'     == ''">false</DisableLanguageExtensions>
-      <ErrorReporting                   Condition="'%(ClCompile.ErrorReporting)'                == ''
-                                                   and '$(BuildingInsideVisualStudio)'          == 'true'">Prompt</ErrorReporting>
-      <ErrorReporting                   Condition="'%(ClCompile.ErrorReporting)'                == ''">Queue</ErrorReporting>
-      <ExpandAttributedSource           Condition="'%(ClCompile.ExpandAttributedSource)'        == ''">false</ExpandAttributedSource>
-      <ExceptionHandling                Condition="'%(ClCompile.ExceptionHandling)'             == ''">Sync</ExceptionHandling>
-      <EnableFiberSafeOptimizations     Condition="'%(ClCompile.EnableFiberSafeOptimizations)'  == ''">false</EnableFiberSafeOptimizations>
-      <EnableEnhancedInstructionSet     Condition="'%(ClCompile.EnableEnhancedInstructionSet)'  == ''">NotSet</EnableEnhancedInstructionSet>
-      <FloatingPointModel               Condition="'%(ClCompile.FloatingPointModel)'            == ''">Precise</FloatingPointModel>
-      <ForceConformanceInForLoopScope   Condition="'%(ClCompile.ForceConformanceInForLoopScope)'== ''">true</ForceConformanceInForLoopScope>
-      <ForcedIncludeFiles               Condition="'%(ClCompile.ForcedIncludeFiles)'            == ''"></ForcedIncludeFiles>
-      <ForcedUsingFiles                 Condition="'%(ClCompile.ForcedUsingFiles)'              == ''"></ForcedUsingFiles>
-      <GenerateXMLDocumentationFiles    Condition="'%(ClCompile.GenerateXMLDocumentationFiles)' == ''">false</GenerateXMLDocumentationFiles>
-      <InlineFunctionExpansion          Condition="'%(ClCompile.InlineFunctionExpansion)'       == ''">Default</InlineFunctionExpansion>
-      <IntrinsicFunctions               Condition="'%(ClCompile.IntrinsicFunctions)'            == ''">false</IntrinsicFunctions>
-      <IgnoreStandardIncludePath        Condition="'%(ClCompile.IgnoreStandardIncludePath)'     == ''">false</IgnoreStandardIncludePath>
-      <MinimalRebuild                   Condition="'%(ClCompile.MinimalRebuild)'                == '' and
-                                                  ('$(CLRSupport)'                              == '' or
-                                                   '$(CLRSupport)'                              == 'false')">false</MinimalRebuild>
-      <OmitDefaultLibName               Condition="'%(ClCompile.OmitDefaultLibName)'            == ''">false</OmitDefaultLibName>
-      <FavorSizeOrSpeed                 Condition="'%(ClCompile.FavorSizeOrSpeed)'              == ''">Neither</FavorSizeOrSpeed>
-      <WholeProgramOptimization         Condition="'%(ClCompile.WholeProgramOptimization)'      == ''">false</WholeProgramOptimization>
-      <Optimization                     Condition="'%(ClCompile.Optimization)'                  == '' and
-                                                   ('%(ClCompile.BasicRuntimeChecks)'           == '' or
-                                                   '%(ClCompile.BasicRuntimeChecks)'            == 'Default')">MaxSpeed</Optimization>
-      <ObjectFileName                   Condition="'%(ClCompile.ObjectFileName)'                == ''">$(IntDir)</ObjectFileName>
-      <CallingConvention                Condition="'%(ClCompile.CallingConvention)'             == '' and
-                                                  ('$(CLRSupport)'                              == '' or
-                                                   '$(CLRSupport)'                              == 'false')">Cdecl</CallingConvention>
-      <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == '' and
-                                                   '$(ConfigurationType)'                       == 'StaticLibrary'">$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
-      <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == '' and
-                                                   '$(PlatformToolsetVersion)'                  != ''">$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
-      <PrecompiledHeader                Condition="'%(ClCompile.PrecompiledHeader)'             == ''">NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile            Condition="'%(ClCompile.PrecompiledHeaderFile)'         == ''">stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile      Condition="'%(ClCompile.PrecompiledHeaderOutputFile)'   == ''">$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == ''">$(IntDir)vc140.pdb</ProgramDataBaseFileName>
-      <PreprocessToFile                 Condition="'%(ClCompile.PreprocessToFile)'              == ''">false</PreprocessToFile>
-      <PreprocessKeepComments           Condition="'%(ClCompile.PreprocessKeepComments)'        == ''">false</PreprocessKeepComments>
-      <PreprocessSuppressLineNumbers    Condition="'%(ClCompile.PreprocessSuppressLineNumbers)' == ''">false</PreprocessSuppressLineNumbers>
-      <ProcessorNumber                  Condition="'$(CL_MPCount)'                              != ''">$(CL_MPCount)</ProcessorNumber>
-      <RuntimeLibrary                   Condition="'%(ClCompile.RuntimeLibrary)'                == ''">MultiThreadedDll</RuntimeLibrary>
-      <ShowIncludes                     Condition="'%(ClCompile.ShowIncludes)'                  == ''">false</ShowIncludes>
-      <SuppressStartupBanner            Condition="'%(ClCompile.SuppressStartupBanner)'         == ''">true</SuppressStartupBanner>
-      <BufferSecurityCheck              Condition="'%(ClCompile.BufferSecurityCheck)'           == ''">true</BufferSecurityCheck>
-      <StructMemberAlignment            Condition="'%(ClCompile.StructMemberAlignment)'         == ''">Default</StructMemberAlignment>
-      <SmallerTypeCheck                 Condition="'%(ClCompile.SmallerTypeCheck)'              == ''">false</SmallerTypeCheck>
-      <TrackerLogDirectory              Condition="'%(ClCompile.TrackerLogDirectory)'           == ''">$(TLogLocation)</TrackerLogDirectory>
-      <MinimalRebuildFromTracking       Condition="'%(ClCompile.MinimalRebuildFromTracking)'    == ''">true</MinimalRebuildFromTracking>
-      <TreatWarningAsError              Condition="'%(ClCompile.TreatWarningAsError)'           == ''">false</TreatWarningAsError>
-      <TreatWChar_tAsBuiltInType        Condition="'%(ClCompile.TreatWChar_tAsBuiltInType)'     == ''">true</TreatWChar_tAsBuiltInType>
-      <UseFullPaths                     Condition="'%(ClCompile.UseFullPaths)'                  == ''">false</UseFullPaths>
-      <WarningLevel                     Condition="'%(ClCompile.WarningLevel)'                  == ''">Level1</WarningLevel>
-      <XMLDocumentationFileName         Condition="'%(ClCompile.XMLDocumentationFileName)'      == ''">$(IntDir)</XMLDocumentationFileName>
-      <DebugInformationFormat           Condition="'%(ClCompile.DebugInformationFormat)'        == ''">ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  
-  <!-- Property pages -->
-  <ItemGroup>
-    <PropertyPageSchema Include="$(ProjectDir)\boost.xml" >
-      <Context>Project</Context>
-    </PropertyPageSchema>
-
-    <PropertyPageSchema Include="cl.xml" />
-    <PropertyPageSchema Include="link.xml" />
-
-    <ProjectTools Include="ConfigurationGeneral" />
-    <ProjectTools Include="linkflags" />    
-    <ProjectTools Include="cxxflags" />
-  </ItemGroup>
-
+ 
 </Project>

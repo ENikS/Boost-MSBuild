@@ -15,7 +15,7 @@
     <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
   </Rule.Categories>
   <Rule.DataSource>
-    <DataSource Persistence="ProjectFile" ItemType="cxxflags" Label="" HasConfigurationCondition="true" />
+    <DataSource Persistence="ProjectFile" Label="cxxflags" HasConfigurationCondition="true" />
   </Rule.DataSource>
   <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Additional Include Directories" Description="Specifies one or more directories to add to the include path; separate with semi-colons if more than one.     (/I[path])" Category="General" Switch="I" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalIncludeDirectories">
   </StringListProperty>
@@ -322,7 +322,7 @@
   </EnumProperty>
   <StringListProperty Name="TreatSpecificWarningsAsErrors" DisplayName="Treat Specific Warnings As Errors" Description="Treats the specific compiler warning as an error where n is a compiler warning." Category="Advanced" Switch="we" F1Keyword="VC.Project.VCCLCompilerTool.TreatSpecificWarningsAsErrors">
   </StringListProperty>
-  <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." SwitchPrefix="--" Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
   </StringProperty>
   <BoolProperty Name="BuildingInIde" Visible="false">
   </BoolProperty>

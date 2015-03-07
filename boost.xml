@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--Copyright, Eugene Sadovoi.-->
+<!--Copyright, Eugene Sadovoi (C).-->
 <ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties" 
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:sys="clr-namespace:System;assembly=mscorlib">
@@ -7,6 +7,7 @@
         Name="ConfigurationGeneral"
         DisplayName="Boost"
         PageTemplate="tool"
+        SwitchPrefix="-"
         Description="General" >
     
     <Rule.Categories>
@@ -23,7 +24,7 @@
     </Rule.DataSource>
 
     <StringProperty Name="OutDir" DisplayName="Output Directory"
-                    Switch="--stage-dir" Separator="="
+                    Switch="--stagedir" Separator="="
                     Description="Specifies a relative path to the output file directory; can include environment variables."
                     Category="General" Default="$(SolutionDir)$(Configuration)\"
                     Subtype="folder"
@@ -39,7 +40,7 @@
                     F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
                     Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
                     Subtype="file" />
-    <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets" IncludeInCommandLine="true"
+    <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets" IncludeInCommandLine="false"
                          Switch="toolset=msvc" Separator="-" 
                          Description="Specifies the toolset used for building the current configuration; If not set, the default toolset is used"
                          F1Keyword="VC.Project.VCConfiguration.PlatformToolset"
@@ -78,7 +79,7 @@
       <EnumValue Name="tagged" Switch="--layout=tagged" DisplayName="Tagged Layout" Description="Names of boost binaries include the encoded build properties such as variant and threading, but do not including compiler name and version, or Boost version." />
       <EnumValue Name="system" Switch="--layout=system" DisplayName="System Layout" Description="Binaries names do not include the Boost version number or the name and version number of the compiler." />
     </EnumProperty>
-    <EnumProperty Name="CharacterSet" DisplayName="Character Set" Visible="false"
+    <EnumProperty Name="CharacterSet" DisplayName="Character Set" Visible="false" IncludeInCommandLine="false"
                   Description="Tells the compiler to use the specified character set; aids in localization issues."
                   Category="ProjectDefaults" 
                   F1Keyword="VC.Project.VCConfiguration.CharacterSet">
@@ -86,7 +87,7 @@
       <EnumValue Name="Unicode" DisplayName="Use Unicode Character Set" Description="Use Unicode Character Set" />
       <EnumValue Name="MultiByte" DisplayName="Use Multi-Byte Character Set" Description="Use Multi-Byte Character Set" />
     </EnumProperty>
-    <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime Support" Visible="false"
+    <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime Support" Visible="false" IncludeInCommandLine="false"
                   Description="Specifies whether this configuration supports the Common Language Runtime. This is incompatible with some other settings, e.g. runtime checks. See help for /clr family of C++ compiler switches for full list of conflicts."
                   Category="ProjectDefaults"
                   F1Keyword="VC.Project.VCConfiguration.ManagedExtensions">
@@ -137,8 +138,8 @@
     <BoolProperty Switch="--with-timer" ReverseSwitch="--without-timer" Name="timer_library" DisplayName="timer" Description="Build, stage, or install 'timer' library." Category="Build" HelpUrl=""/>
     <BoolProperty Switch="--with-wave" ReverseSwitch="--without-wave" Name="wave_library" DisplayName="wave" Description="Build, stage, or install 'wave' library." Category="Build" HelpUrl=""/>
     <!--Command Line support-->
-    <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage" />
-    <IntProperty Name="PlatformArchitecture" DisplayName="Platform Architecture" Description="Platform Architecture." Category="General" Switch="address-model" Separator="=" Visible="false" IncludeInCommandLine="true" ReadOnly="true" />
+    <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage" IncludeInCommandLine="false" />
+    <IntProperty Name="PlatformArchitecture" DisplayName="Platform Architecture" Description="Platform Architecture." Category="General" Switch="address-model" Separator="=" Visible="false" ReadOnly="true" />
     <EnumProperty Name="Configuration" DisplayName="Build Configuration"
                   Description="Build Configuration." Category="General"
                   Visible="false" IncludeInCommandLine="true" ReadOnly="true">
@@ -146,49 +147,51 @@
       <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug"/>
     </EnumProperty>
     <!--Compression-->
-    <BoolProperty ReverseSwitch="-sNO_COMPRESSION" Name="enable-compression" DisplayName="Enable Compression" Description="Enable support for compression filters." Category="Compression" 
+    <BoolProperty ReverseSwitch="-sNO_COMPRESSION" Name="enable-compression" DisplayName="Enable Compression" Description="Enable support for compression filters." Category="Compression" IncludeInCommandLine="false"
                   HelpUrl="http://www.boost.org/doc/libs/1_57_0/libs/iostreams/doc/classes/bzip2.html#installation"/>
-    <BoolProperty ReverseSwitch="-sNO_BZIP2"       Name="enable-bzip2"       DisplayName="Enable BZip2"       Description="Enable support for BZip2 filters." Category="Compression" HelpUrl=""/>
-    <StringProperty Name="bzip2-binary" DisplayName="Name of the LIBBZ2 binary" Category="Compression"
+    <BoolProperty ReverseSwitch="-sNO_BZIP2"       Name="enable-bzip2"       DisplayName="Enable BZip2"       Description="Enable support for BZip2 filters." Category="Compression" IncludeInCommandLine="false"
+                  HelpUrl=""/>
+    <StringProperty Name="bzip2-binary" DisplayName="Name of the LIBBZ2 binary" Category="Compression"     IncludeInCommandLine="false"
                     Switch="-sBZIP2_BINARY" Separator="=" Default="libbz2"
                     Description="Name of the libbz2 binary, not including the file extension. If linking with a dynamic build of libbz2, specify the name of the import library."  />
 
-    <StringProperty Name="bzip2-include" DisplayName="LIBBZ2 Headers" Category="Compression"
+    <StringProperty Name="bzip2-include" DisplayName="LIBBZ2 Headers" Category="Compression"   IncludeInCommandLine="false"
                     Switch="-sBZIP2_INCLUDE" Separator="=" Default="$(bzip2-source)"
                     Description="Path to the libbz2 headers, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="bzip2-libpath" DisplayName="LIBBZ2 Binary" Category="Compression"
+    <StringProperty Name="bzip2-libpath" DisplayName="LIBBZ2 Binary" Category="Compression"     IncludeInCommandLine="false"
                     Switch="-sBZIP2_LIBPATH" Separator="="
                     Description="Path to the libbz2 binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of libbz2, specify the path to the import library."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="bzip2-source" DisplayName="LIBBZ2 Source" Category="Compression"
+    <StringProperty Name="bzip2-source" DisplayName="LIBBZ2 Source" Category="Compression"   IncludeInCommandLine="false"
                     Switch="-sBZIP2_SOURCE" Separator="="
                     Description="Path to the libbz2 source files, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <BoolProperty ReverseSwitch="-sNO_ZZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression" HelpUrl=""/>
-    <StringProperty Name="zlib-binary" DisplayName="Name of the ZLIB binary" Category="Compression"
+    <BoolProperty ReverseSwitch="-sNO_ZZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression"   IncludeInCommandLine="false"
+                  HelpUrl=""/>
+    <StringProperty Name="zlib-binary" DisplayName="Name of the ZLIB binary" Category="Compression"  IncludeInCommandLine="false"
                     Switch="-sZLIB_BINARY" Separator="=" Default="zdll"
                     Description="Name of the zlib binary, not including the file extension. If linking with a dynamic build of zlib, specify the name of the import library."  />
 
-    <StringProperty Name="zlib-include" DisplayName="ZLIB Headers" Category="Compression"
+    <StringProperty Name="zlib-include" DisplayName="ZLIB Headers" Category="Compression"  IncludeInCommandLine="false"
                     Switch="-sZLIB_INCLUDE" Separator="=" Default="$(zlib-source)"
                     Description="Path to the zlib headers, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="zlib-libpath" DisplayName="ZLIB Binary" Category="Compression"
+    <StringProperty Name="zlib-libpath" DisplayName="ZLIB Binary" Category="Compression"  IncludeInCommandLine="false"
                     Switch="-sZLIB_LIBPATH" Separator="="
                     Description="Path to the zlib binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of zlib, specify the path to the import library."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="zlib-source" DisplayName="ZLIB Source" Category="Compression"
+    <StringProperty Name="zlib-source" DisplayName="ZLIB Source" Category="Compression"  IncludeInCommandLine="false"
                     Switch="-sZLIB_SOURCE" Separator="="
                     Description="Path to the zlib source files, if they're not in a location where they'll be found automatically."
                     Subtype="folder"

@@ -1,14 +1,11 @@
 ﻿<!--
 ***********************************************************************************************
 
-
 WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
           created a backup copy.  Incorrect changes to this file will make it
           impossible to load or build your projects from the command-line or the IDE.
 
-
-
-Copyright (C) 
+Copyright Eugene Sadovoi (C) 
 ***********************************************************************************************
 -->
 
@@ -107,79 +104,19 @@ Copyright (C)
   ///////////////////////////////////////////////////////////
   // Prepare command line options for build command
   ///////////////////////////////////////////////////////////-->
-  <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" >
+  <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" Returns="@(boost-options)" >
     <Error ContinueOnError="false" Text="Boost Library not found." Condition="'$(BoostDir)'==''" />
     <Error Condition="!Exists('$(BoostDir)\Jamroot')" Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" ContinueOnError="false" />
 
-    <PropertyGroup Label="Set all build options">
-      <!--Toolset-->
-      <boost-options>toolset=msvc</boost-options>
-      <boost-options Condition="'$(PlatformToolset)'!=''"              >$(boost-options)$([System.String]::Format('-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))</boost-options>
-      <!--Configuration Manager-->
-      <boost-options>$(boost-options)&#32;address-model=$(PlatformArchitecture)&#32;variant=$(Configuration.ToLower())</boost-options>
-      <!--Build Settings-->                                  
-      <boost-options Condition="'$(boost-link)'              !=''"    >$(boost-options)&#32;link=$(boost-link)</boost-options>
-      <boost-options Condition="'$(boost-runtime-link)'      !=''"    >$(boost-options)&#32;runtime-link=$(boost-runtime-link)</boost-options>
-      <boost-options Condition="'$(boost-threading)'         !=''"    >$(boost-options)&#32;threading=$(boost-threading)</boost-options>
-      <boost-options Condition="'$(boost-build-type)'        !=''"    >$(boost-options)&#32;--build-type=$(boost-build-type)</boost-options>
-      <boost-options Condition="'$(boost-layout)'            !=''"    >$(boost-options)&#32;--layout=$(boost-layout)</boost-options>
-      <boost-options Condition="'$(boost-windows-api)'       !=''"    >$(boost-options)&#32;windows-api=$(boost-windows-api)</boost-options>
-      <boost-options Condition="'$(AdditionalOptions)'       !=''"    >$(boost-options)&#32;$(AdditionalOptions)</boost-options>
-      <boost-options Condition="'$(stage_library)'           =='true'">$(boost-options)&#32;stage</boost-options>
-      <!--Libraries-->
-      <boost-options Condition="'$(atomic_library)'          =='true' ">$(boost-options)&#32;--with-atomic</boost-options>
-      <boost-options Condition="'$(chrono_library)'          =='true' ">$(boost-options)&#32;--with-chrono</boost-options>
-      <boost-options Condition="'$(container_library)'       =='true' ">$(boost-options)&#32;--with-container</boost-options>
-      <boost-options Condition="'$(context_library)'         =='true' ">$(boost-options)&#32;--with-context</boost-options>
-      <boost-options Condition="'$(coroutine_library)'       =='true' ">$(boost-options)&#32;--with-coroutine</boost-options>
-      <boost-options Condition="'$(date_time_library)'       =='true' ">$(boost-options)&#32;--with-date_time</boost-options>
-      <boost-options Condition="'$(exception_library)'       =='true' ">$(boost-options)&#32;--with-exception</boost-options>
-      <boost-options Condition="'$(filesystem_library)'      =='true' ">$(boost-options)&#32;--with-filesystem</boost-options>
-      <boost-options Condition="'$(graph_library)'           =='true' ">$(boost-options)&#32;--with-graph</boost-options>
-      <boost-options Condition="'$(graph_parallel_library)'  =='true' ">$(boost-options)&#32;--with-graph_parallel</boost-options>
-      <boost-options Condition="'$(iostreams_library)'       =='true' ">$(boost-options)&#32;--with-iostreams</boost-options>
-      <boost-options Condition="'$(locale_library)'          =='true' ">$(boost-options)&#32;--with-locale</boost-options>
-      <boost-options Condition="'$(log_library)'             =='true' ">$(boost-options)&#32;--with-log</boost-options>
-      <boost-options Condition="'$(math_library)'            =='true' ">$(boost-options)&#32;--with-math</boost-options>
-      <boost-options Condition="'$(mpi_library)'             =='true' ">$(boost-options)&#32;--with-mpi</boost-options>
-      <boost-options Condition="'$(program_options_library)' =='true' ">$(boost-options)&#32;--with-program_options</boost-options>
-      <boost-options Condition="'$(python_library)'          =='true' ">$(boost-options)&#32;--with-python</boost-options>
-      <boost-options Condition="'$(random_library)'          =='true' ">$(boost-options)&#32;--with-random</boost-options>
-      <boost-options Condition="'$(regex_library)'           =='true' ">$(boost-options)&#32;--with-regex</boost-options>
-      <boost-options Condition="'$(serialization_library)'   =='true' ">$(boost-options)&#32;--with-serialization</boost-options>
-      <boost-options Condition="'$(signals_library)'         =='true' ">$(boost-options)&#32;--with-signals</boost-options>
-      <boost-options Condition="'$(system_library)'          =='true' ">$(boost-options)&#32;--with-system</boost-options>
-      <boost-options Condition="'$(test_library)'            =='true' ">$(boost-options)&#32;--with-test</boost-options>
-      <boost-options Condition="'$(thread_library)'          =='true' ">$(boost-options)&#32;--with-thread</boost-options>
-      <boost-options Condition="'$(timer_library)'           =='true' ">$(boost-options)&#32;--with-timer</boost-options>
-      <boost-options Condition="'$(wave_library)'            =='true' ">$(boost-options)&#32;--with-wave</boost-options>
-      <boost-options Condition="'$(atomic_library)'          =='false'">$(boost-options)&#32;--without-atomic</boost-options>
-      <boost-options Condition="'$(chrono_library)'          =='false'">$(boost-options)&#32;--without-chrono</boost-options>
-      <boost-options Condition="'$(container_library)'       =='false'">$(boost-options)&#32;--without-container</boost-options>
-      <boost-options Condition="'$(context_library)'         =='false'">$(boost-options)&#32;--without-context</boost-options>
-      <boost-options Condition="'$(coroutine_library)'       =='false'">$(boost-options)&#32;--without-coroutine</boost-options>
-      <boost-options Condition="'$(date_time_library)'       =='false'">$(boost-options)&#32;--without-date_time</boost-options>
-      <boost-options Condition="'$(exception_library)'       =='false'">$(boost-options)&#32;--without-exception</boost-options>
-      <boost-options Condition="'$(filesystem_library)'      =='false'">$(boost-options)&#32;--without-filesystem</boost-options>
-      <boost-options Condition="'$(graph_library)'           =='false'">$(boost-options)&#32;--without-graph</boost-options>
-      <boost-options Condition="'$(graph_parallel_library)'  =='false'">$(boost-options)&#32;--without-graph_parallel</boost-options>
-      <boost-options Condition="'$(iostreams_library)'       =='false'">$(boost-options)&#32;--without-iostreams</boost-options>
-      <boost-options Condition="'$(locale_library)'          =='false'">$(boost-options)&#32;--without-locale</boost-options>
-      <boost-options Condition="'$(log_library)'             =='false'">$(boost-options)&#32;--without-log</boost-options>
-      <boost-options Condition="'$(math_library)'            =='false'">$(boost-options)&#32;--without-math</boost-options>
-      <boost-options Condition="'$(mpi_library)'             =='false'">$(boost-options)&#32;--without-mpi</boost-options>
-      <boost-options Condition="'$(program_options_library)' =='false'">$(boost-options)&#32;--without-program_options</boost-options>
-      <boost-options Condition="'$(python_library)'          =='false'">$(boost-options)&#32;--without-python</boost-options>
-      <boost-options Condition="'$(random_library)'          =='false'">$(boost-options)&#32;--without-random</boost-options>
-      <boost-options Condition="'$(regex_library)'           =='false'">$(boost-options)&#32;--without-regex</boost-options>
-      <boost-options Condition="'$(serialization_library)'   =='false'">$(boost-options)&#32;--without-serialization</boost-options>
-      <boost-options Condition="'$(signals_library)'         =='false'">$(boost-options)&#32;--without-signals</boost-options>
-      <boost-options Condition="'$(system_library)'          =='false'">$(boost-options)&#32;--without-system</boost-options>
-      <boost-options Condition="'$(test_library)'            =='false'">$(boost-options)&#32;--without-test</boost-options>
-      <boost-options Condition="'$(thread_library)'          =='false'">$(boost-options)&#32;--without-thread</boost-options>
-      <boost-options Condition="'$(timer_library)'           =='false'">$(boost-options)&#32;--without-timer</boost-options>
-      <boost-options Condition="'$(wave_library)'            =='false'">$(boost-options)&#32;--without-wave</boost-options>
-    </PropertyGroup>
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="PropertyPageSchema=%(PropertyPageSchema.Identity)" Condition="'%(PropertyPageSchema.Context)'=='Project'" Targets="GetCommandLineOptions" >
+      <Output ItemName="boost-options" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+
+    <ItemGroup Label="Build Settings">
+      <boost-options Condition="'$(PlatformToolset)'  ==''" Include="toolset=msvc" />
+      <boost-options Condition="'$(PlatformToolset)'  !=''" Include="$([System.String]::Format('toolset=msvc-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))" />
+      <boost-options Condition="'$(AdditionalOptions)'!=''" Include="$(AdditionalOptions)" />
+    </ItemGroup>
   </Target>
 
 
@@ -213,9 +150,16 @@ Copyright (C)
     // BUILD TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Build" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;" >
-    <Error Condition="$(boost-options.Substring(0, 12))!='toolset=msvc'" Text="Invalid boost options: 'boost-options' element has been overwritten in one of the targets." ContinueOnError="false" />
     <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe $(boost-options) $(dirs-options)"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
+    <Exec Command="b2.exe @(boost-options, ' ')"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
+  <!--
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="PropertyPageSchema=%(PropertyPageSchema.Identity)" Targets="GetCommandLineOptions" >
+      <Output ItemName="out-options" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+
+    <Message Text="XML : %(out-options.Identity)"  Importance="high"/>
+    <Message Text="boost-options : @(boost-options, ' ')" Condition=""  Importance="high"/>
+  -->
   </Target>
 
   <!--
@@ -223,13 +167,8 @@ Copyright (C)
     // REBUILD TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Rebuild" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;">
-    <Error Condition="$(boost-options.Substring(0, 12))!='toolset=msvc'" Text="Invalid boost options: 'boost-options' element has been overwritten in one of the targets." ContinueOnError="false" />
     <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe $(boost-options) $(dirs-options) -a"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" />
-  <!--
-    <Message Text="Building : $(dirs-options)" Importance="high" />
-    <Exec Command="SET" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" />
-  -->
+    <Exec Command="b2.exe @(boost-options, ' ') -a"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" />
   </Target>
   
   

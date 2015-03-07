@@ -28,18 +28,25 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PlatformToolset>v120</PlatformToolset>
     <stage_library>true</stage_library>
+    <BoostDir>..\boost</BoostDir>
+    <boost-link>static</boost-link>
+    <context_library>false</context_library>
+    <AdditionalOptions>-n $(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v120</PlatformToolset>
     <stage_library>true</stage_library>
+    <BoostDir>..\boost</BoostDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformToolset>v120</PlatformToolset>
     <stage_library>true</stage_library>
+    <BoostDir>..\boost</BoostDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PlatformToolset>v120</PlatformToolset>
     <stage_library>true</stage_library>
+    <BoostDir>..\boost</BoostDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -47,13 +54,14 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)'=='12.0'"  Label="Import Settings">
+  <PropertyGroup Condition="'$(VisualStudioVersion)'=='12.0'" Label="Import Settings">
     <UseDefaultProjectTools>false</UseDefaultProjectTools>
     <UseDefaultPropertyPageSchemas>false</UseDefaultPropertyPageSchemas>
     <UseDefaultGeneralPropertyPageSchema>false</UseDefaultGeneralPropertyPageSchema>
   </PropertyGroup>
   <Import Condition="'$(VisualStudioVersion)'=='12.0'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="XmlConfig.targets" />
     <Import Project="boost.targets" />
   </ImportGroup>
 </Project>

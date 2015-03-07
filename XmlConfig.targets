@@ -1,0 +1,98 @@
+﻿<!--
+***********************************************************************************************
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright Eugene Sadovoi (C) 
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+
+
+  <Target Name="GetCommandLineOptions" Outputs="@(options, ' ');" >
+
+    <XmlPeek Namespaces="&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/build/2009/properties'/&gt;"
+             XmlInputPath="$(PropertyPageSchema)"
+             Query="/msb:Rule/@SwitchPrefix|/msb:ProjectSchemaDefinitions/msb:Rule/@SwitchPrefix">
+      <Output Condition="'$(Result)'!=''" TaskParameter="Result" ItemName="DefaultSwitchPrefix" />
+    </XmlPeek>
+
+    <XmlPeek Namespaces="&lt;Namespace Prefix='msb' Uri='http://schemas.microsoft.com/build/2009/properties'/&gt;"
+             XmlInputPath="$(PropertyPageSchema)"
+             Query="/msb:Rule/*[@Name]|/msb:ProjectSchemaDefinitions/msb:Rule/*[@Name]">
+      <Output TaskParameter="Result" ItemName="Peeked" />
+    </XmlPeek>
+
+    <ItemGroup>
+      <PropertyElements Remove="@(PropertyElements)" />
+      <PropertyElements Condition="'$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=IncludeInCommandLine=&#34;)(.*?)(?=&#34;)))'!='false'"
+                        Include="@(Peeked -> '%(Identity)')">
+        <Type>$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=&lt;)(.*?)(?=\s)))</Type>
+        <Name>$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=Name=")(.*?)(?=")))</Name>
+        <SwitchPrefix>$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=SwitchPrefix=")(.*?)(?=")))</SwitchPrefix>
+        <SwitchPrefix Condition="'$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=SwitchPrefix=&#34;)(.*?)(?=&#34;)))'==''">@(DefaultSwitchPrefix)</SwitchPrefix>
+        <Switch>$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=Switch=")(.*?)(?=")))</Switch>
+        <ReverseSwitch>$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=ReverseSwitch=")(.*?)(?=")))</ReverseSwitch>
+        <Separator>$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=Separator=")(.*?)(?=")))</Separator>
+        <Children>$([System.Text.RegularExpressions.Regex]::Matches(%(Identity), EnumValue\s(.*?)&#62;))</Children>
+        <Subtype>$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=Subtype=")(.*?)(?=")))</Subtype>
+      </PropertyElements>
+      
+      <!--BoolProperty-->
+      <options Condition="'$(%(PropertyElements.Name))'=='true' And '%(PropertyElements.Type)'=='BoolProperty' And '%(PropertyElements.Switch)'!=''"
+              Include="%(PropertyElements.SwitchPrefix)%(PropertyElements.Switch)" />
+
+      <options Condition="'$(%(PropertyElements.Name))'=='false' And '%(PropertyElements.Type)'=='BoolProperty' And '%(PropertyElements.ReverseSwitch)'!=''"
+              Include="%(PropertyElements.SwitchPrefix)%(PropertyElements.ReverseSwitch)" />
+
+      <!--IntProperty-->
+      <options Condition="'$(%(PropertyElements.Name))'!='' And '%(PropertyElements.Type)'=='IntProperty'"
+              Include="%(PropertyElements.SwitchPrefix)%(PropertyElements.Switch)%(PropertyElements.Separator)$(%(PropertyElements.Name))" />
+      
+      <!--StringProperty-->
+      <options Condition="'$(%(PropertyElements.Name))'!='' And '%(PropertyElements.Type)'=='StringProperty' And
+                          '$([System.String]::Copy(&#34;%(PropertyElements.Subtype)&#34;).ToLower())' !='folder'"
+              Include="%(PropertyElements.SwitchPrefix)%(PropertyElements.Switch)%(PropertyElements.Separator)&#34;$(%(PropertyElements.Name))&#34;" />
+      <options Condition="'$(%(PropertyElements.Name))'!='' And '%(PropertyElements.Type)'=='StringProperty' And 
+                          '$([System.String]::Copy(&#34;%(PropertyElements.Subtype)&#34;).ToLower())' =='folder'"
+              Include="%(PropertyElements.SwitchPrefix)%(PropertyElements.Switch)%(PropertyElements.Separator)&#34;$([System.String]::Copy('$(%(PropertyElements.Name))').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
+
+      <!--StringListProperty-->
+      <list-string-options Condition="'$(%(PropertyElements.Name))'!='' And '%(PropertyElements.Type)'=='StringListProperty'"
+              Include="$(%(PropertyElements.Name))" >
+        <Prefix>%(PropertyElements.SwitchPrefix)%(PropertyElements.Switch)%(PropertyElements.Separator)</Prefix>
+        <Subtype>%(PropertyElements.Subtype)</Subtype>
+      </list-string-options>
+      <options Condition="'%(list-string-options.Identity)'!='' And '$([System.String]::Copy(&#34;%(list-string-options.Subtype)&#34;).ToLower())'!='folder'" 
+               Include="%(list-string-options.Prefix)&#34;%(list-string-options.Identity)&#34;" />
+      <options Condition="'%(list-string-options.Identity)'!='' And '$([System.String]::Copy(&#34;%(list-string-options.Subtype)&#34;).ToLower())'=='folder'"
+               Include="%(list-string-options.Prefix)&#34;$([System.String]::Copy('%(list-string-options.Identity)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
+
+      <!--DynamicEnumProperty-->
+      <options Condition="'$(%(PropertyElements.Name))'!='' And '%(PropertyElements.Type)'=='DynamicEnumProperty'"
+              Include="%(PropertyElements.SwitchPrefix)%(PropertyElements.Switch)" />
+
+      <!--EnumProperty-->
+      <enum-values Condition="'%(PropertyElements.Type)'=='EnumProperty'" Include="%(PropertyElements.Children)" >
+        <Name>%(PropertyElements.Name)</Name>
+        <SwitchPrefix>%(PropertyElements.SwitchPrefix)</SwitchPrefix>
+      </enum-values>
+      <options Condition="'$(%(enum-values.Name))'!='' And '$(%(enum-values.Name))'=='$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=Name=&#34;)(.*?)(?=&#34;)))'"
+               Include="%(enum-values.SwitchPrefix)$([System.Text.RegularExpressions.Regex]::Match(%(Identity), (?&lt;=Switch=&#34;)(.*?)(?=&#34;)))" />
+
+    </ItemGroup>
+
+    <!--Debug-->
+    <!--
+    <Message Text="PropertyElements : %(PropertyElements.Name) - $(%(PropertyElements.Name))" Condition="'$(%(PropertyElements.Name))'!=''" Importance="high"/>
+    <Message Text="______________________________________________________________________________________________________________________"  Importance="high"/>
+    -->
+
+  </Target>
+  
+
+</Project>

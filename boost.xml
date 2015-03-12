@@ -3,33 +3,27 @@
 <ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties" 
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:sys="clr-namespace:System;assembly=mscorlib">
-  <Rule
-        Name="ConfigurationGeneral"
-        DisplayName="Boost"
-        PageTemplate="tool"
-        SwitchPrefix="-"
-        Description="General" >
-    
+  <Rule Name="General"
+        DisplayName="General"
+        PageTemplate="generic"
+        Order="10"
+        Description="General Settings">
+
     <Rule.Categories>
       <Category Name="General" DisplayName="General" Description="General" />
-      <Category Name="ProjectDefaults" DisplayName="Options" Description="Project Defaults" />
-      <Category Name="Build" DisplayName="To Build" Description="Libraries Build settings" />
-      <Category Name="Compression" DisplayName="Compression" Description="Location of ZLib and BZip libraries" />
-      <Category Name="All Options" DisplayName="All Options" Subtype="Search" />
-      <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
     </Rule.Categories>
-    
+
     <Rule.DataSource>
       <DataSource Persistence="ProjectFile" Label="Configuration" />
     </Rule.DataSource>
 
-    <StringProperty Name="OutDir" DisplayName="Output Directory"
+    <StringProperty Name="OutDir" DisplayName="Output Directory" IncludeInCommandLine="false"
                     Switch="--stagedir" Separator="="
                     Description="Specifies a relative path to the output file directory; can include environment variables."
                     Category="General" Default="$(SolutionDir)$(Configuration)\"
                     Subtype="folder"
                     F1Keyword="VC.Project.VCConfiguration.OutputDirectory" />
-    <StringProperty Name="IntDir" DisplayName="Intermediate Directory"
+    <StringProperty Name="IntDir" DisplayName="Intermediate Directory" IncludeInCommandLine="false"
                     Switch="--build-dir" Separator="="
                     Description="Specifies a relative path to the intermediate file directory; can include environment variables."
                     Category="General" Default="$(Configuration)\"
@@ -41,7 +35,7 @@
                     Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
                     Subtype="file" />
     <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets" IncludeInCommandLine="false"
-                         Switch="toolset=msvc" Separator="-" 
+                         Switch="toolset=msvc" Separator="-"
                          Description="Specifies the toolset used for building the current configuration; If not set, the default toolset is used"
                          F1Keyword="VC.Project.VCConfiguration.PlatformToolset"
                          Category="General" />
@@ -50,6 +44,26 @@
                     ReadOnly="false"
                     Category="General"
                     Subtype="folder" />
+
+  </Rule>
+  
+  <Rule Name="Boost"
+        DisplayName="Boost"
+        PageTemplate="tool"
+        Order="20"
+        Description="General Settings" >
+    
+    <Rule.Categories>
+      <Category Name="ProjectDefaults" DisplayName="Properties" Description="Project Defaults" />
+      <Category Name="Build" DisplayName="Libraries" Description="Libraries Build settings" />
+      <Category Name="Compression" DisplayName="Compression" Description="Location of ZLib and BZip libraries" />
+      <Category Name="All Options" DisplayName="All Options" Subtype="Search" />
+      <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
+    </Rule.Categories>
+
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Boost" />
+    </Rule.DataSource>
 
     <EnumProperty Name="boost-link" DisplayName="Configuration Type"
                   Description="Whether to build static or shared libraries."
@@ -62,7 +76,7 @@
       <EnumValue Name="shared" Switch="runtime-link=shared" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" />
       <EnumValue Name="static" Switch="runtime-link=static" DisplayName="Static Libraries " Description="Link to static libraries (.lib)" />
     </EnumProperty>
-    <EnumProperty Name="boost-threading" DisplayName="Link To Runtime Library"
+    <EnumProperty Name="boost-threading" DisplayName="Threading"
                   Description="Whether to build single or multithreaded binaries." Category="ProjectDefaults">
       <EnumValue Name="single" Switch="threading=single" DisplayName="Single Threaded" Description="Builds Single Threaded binaries" />
       <EnumValue Name="multi" Switch="threading=multi" DisplayName="Multi Threaded" Description="Builds Multi Threaded binaries" />
@@ -139,9 +153,9 @@
     <BoolProperty Switch="--with-wave" ReverseSwitch="--without-wave" Name="wave_library" DisplayName="wave" Description="Build, stage, or install 'wave' library." Category="Build" HelpUrl=""/>
     <!--Command Line support-->
     <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage" IncludeInCommandLine="false" />
-    <IntProperty Name="PlatformArchitecture" DisplayName="Platform Architecture" Description="Platform Architecture." Category="General" Switch="address-model" Separator="=" Visible="false" ReadOnly="true" />
+    <IntProperty Name="PlatformArchitecture" DisplayName="Platform Architecture" Description="Platform Architecture." Category="ProjectDefaults" Switch="address-model" Separator="=" Visible="false" ReadOnly="true" />
     <EnumProperty Name="Configuration" DisplayName="Build Configuration"
-                  Description="Build Configuration." Category="General"
+                  Description="Build Configuration." Category="Command Line"
                   Visible="false" IncludeInCommandLine="true" ReadOnly="true">
       <EnumValue Name="Release" Switch="variant=release" DisplayName="Release" Description="Release" />
       <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug"/>

@@ -16,7 +16,6 @@ Copyright Eugene Sadovoi (C)
   // Local variables
   ///////////////////////////////////////////////////////////-->
   <PropertyGroup Label="Defaults">
-    <boost-options />
     <BoostDir Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
   </PropertyGroup>
 
@@ -50,19 +49,30 @@ Copyright Eugene Sadovoi (C)
 
   <!--
   ///////////////////////////////////////////////////////////
-  // UI Property pages
+  // Property Pages Configuration
   ///////////////////////////////////////////////////////////-->
   <ItemGroup>
     <PropertyPageSchema Include="$(ProjectDir)\boost.xml" >
       <Context>Project</Context>
+      <Name>Boost</Name>
+      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;</GetXmlConfig>
+    </PropertyPageSchema>
+    
+    <PropertyPageSchema Include="cl.xml" >
+      <Name>cxxFlags</Name>
+      <SwitchPrefix>cxxflags=&#34;</SwitchPrefix>
+      <SwitchSuffix>&#34;</SwitchSuffix>
+      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;Quote=&#39;</GetXmlConfig>
+    </PropertyPageSchema>
+    
+    <PropertyPageSchema Include="link.xml" >
+      <Name>LinkFlags</Name>
+      <SwitchPrefix>linkflags=&#34;</SwitchPrefix>
+      <SwitchSuffix>&#34;</SwitchSuffix>
+      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;Quote=&#39;</GetXmlConfig>
     </PropertyPageSchema>
 
-    <PropertyPageSchema Include="cl.xml" />
-    <PropertyPageSchema Include="link.xml" />
-
-    <ProjectTools Include="ConfigurationGeneral" />
-    <ProjectTools Include="linkflags" />
-    <ProjectTools Include="cxxflags" />
+    <ProjectTools Include="%(PropertyPageSchema.Name)" />
   </ItemGroup>
 
 
@@ -71,10 +81,10 @@ Copyright Eugene Sadovoi (C)
   // Disambiguate directories
   ///////////////////////////////////////////////////////////-->
   <Target Name="GetDirs" Returns="dirs-options">
-    <PropertyGroup>
-      <dirs-options Condition="'$(IntDir)'!=''"                   >--build-dir=&#34;$([System.IO.Path]::GetFullPath("$(IntDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;</dirs-options>
-      <dirs-options Condition="'$(OutDir)'!=''">$(dirs-options)&#32;--stagedir=&#34;$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;</dirs-options>
-    </PropertyGroup>
+    <ItemGroup>
+      <dirs-options Condition="'$(IntDir)'!=''" Include="--build-dir=&#34;$([System.IO.Path]::GetFullPath('$(IntDir)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
+      <dirs-options Condition="'$(OutDir)'!=''" Include="--stagedir=&#34;$([System.IO.Path]::GetFullPath('$(OutDir)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
+    </ItemGroup>
   </Target>
 
 
@@ -104,17 +114,20 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // Prepare command line options for build command
   ///////////////////////////////////////////////////////////-->
-  <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" Returns="@(boost-options)" >
+  <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" Returns="@(boost-options)" DependsOnTargets="GetDirs;" >
     <Error ContinueOnError="false" Text="Boost Library not found." Condition="'$(BoostDir)'==''" />
     <Error Condition="!Exists('$(BoostDir)\Jamroot')" Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" ContinueOnError="false" />
 
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="PropertyPageSchema=%(PropertyPageSchema.Identity)" Condition="'%(PropertyPageSchema.Context)'=='Project'" Targets="GetCommandLineOptions" >
-      <Output ItemName="boost-options" TaskParameter="TargetOutputs"/>
+    <MSBuild Targets="GetXmlConfig"
+             Projects="$(MSBuildProjectFullPath)" 
+             Properties="PropertyPageSchema=%(PropertyPageSchema.Identity);Name=%(PropertyPageSchema.Name);%(PropertyPageSchema.GetXmlConfig)" >
+      <Output ItemName="options-%(PropertyPageSchema.Name)" TaskParameter="TargetOutputs"/>
     </MSBuild>
-
     <ItemGroup Label="Build Settings">
       <boost-options Condition="'$(PlatformToolset)'  ==''" Include="toolset=msvc" />
       <boost-options Condition="'$(PlatformToolset)'  !=''" Include="$([System.String]::Format('toolset=msvc-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))" />
+      <boost-options Condition="'@(dirs-options)'     !=''" Include="%(dirs-options.Identity)" />
+      <boost-options Condition="'@(options-%(PropertyPageSchema.Name))'!=''" Include="%(PropertyPageSchema.SwitchPrefix);@(options-%(PropertyPageSchema.Name), ' ');%(PropertyPageSchema.SwitchSuffix)" />
       <boost-options Condition="'$(AdditionalOptions)'!=''" Include="$(AdditionalOptions)" />
     </ItemGroup>
   </Target>
@@ -143,23 +156,17 @@ Copyright Eugene Sadovoi (C)
   </Target>
 
 
-  <!--Standard targets-->
-
   <!--
     ///////////////////////////////////////////////////////////
     // BUILD TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Build" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;" >
-    <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe @(boost-options, ' ')"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
   <!--
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="PropertyPageSchema=%(PropertyPageSchema.Identity)" Targets="GetCommandLineOptions" >
-      <Output ItemName="out-options" TaskParameter="TargetOutputs"/>
-    </MSBuild>
-
-    <Message Text="XML : %(out-options.Identity)"  Importance="high"/>
     <Message Text="boost-options : @(boost-options, ' ')" Condition=""  Importance="high"/>
+    <Message Text="dirs-options : @(dirs-options, ' ')"  Importance="high"/>
   -->
+    <Exec Command="b2.exe toolset=msvc headers @(dirs-options, ' ')" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
+    <Exec Command="b2.exe @(boost-options, ' ')"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
   </Target>
 
   <!--
@@ -167,17 +174,17 @@ Copyright Eugene Sadovoi (C)
     // REBUILD TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Rebuild" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;">
-    <Exec Command="b2.exe toolset=msvc headers $(dirs-options)" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe @(boost-options, ' ') -a"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" />
+    <Exec Command="b2.exe toolset=msvc headers @(dirs-options, ' ')" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
+    <Exec Command="b2.exe @(boost-options, ' ') -a" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
   </Target>
-  
-  
+
+
   <!--
     ///////////////////////////////////////////////////////////
     // CLEAN TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Clean" DependsOnTargets="GetDirs;BuildJamTool;" >
-    <Exec Command="b2.exe toolset=msvc $(dirs-options) --clean"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" IgnoreExitCode="true" />
+    <Exec Command="b2.exe toolset=msvc @(dirs-options, ' ') --clean"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" IgnoreExitCode="true" />
   </Target>
 
  

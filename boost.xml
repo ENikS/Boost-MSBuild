@@ -54,7 +54,7 @@
         Description="General Settings" >
     
     <Rule.Categories>
-      <Category Name="ProjectDefaults" DisplayName="Properties" Description="Project Defaults" />
+      <Category Name="ProjectDefaults" DisplayName="Options" Description="Project Defaults" />
       <Category Name="Build" DisplayName="Libraries" Description="Libraries Build settings" />
       <Category Name="Compression" DisplayName="Compression" Description="Location of ZLib and BZip libraries" />
       <Category Name="All Options" DisplayName="All Options" Subtype="Search" />

@@ -16,7 +16,6 @@ Copyright Eugene Sadovoi (C)
   // Defaults
   ///////////////////////////////////////////////////////////-->
 
-  
   <!--
   ///////////////////////////////////////////////////////////
   // UI Configuration
@@ -25,26 +24,25 @@ Copyright Eugene Sadovoi (C)
     <PropertyPageSchema Include="$(ProjectDir)boost.xml" >
       <Context>Project</Context>
       <Name>Boost</Name>
-      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;</GetXmlConfig>
+      <XmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;</XmlConfig>
     </PropertyPageSchema>
     
     <PropertyPageSchema Include="$(ProjectDir)cl.xml" >
       <Name>cxxFlags</Name>
       <SwitchPrefix>cxxflags=&#34;</SwitchPrefix>
       <SwitchSuffix>&#34;</SwitchSuffix>
-      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</GetXmlConfig>
+      <XmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</XmlConfig>
     </PropertyPageSchema>
     
     <PropertyPageSchema Include="$(ProjectDir)link.xml" >
       <Name>LinkFlags</Name>
       <SwitchPrefix>linkflags=&#34;</SwitchPrefix>
       <SwitchSuffix>&#34;</SwitchSuffix>
-      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</GetXmlConfig>
+      <XmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</XmlConfig>
     </PropertyPageSchema>
 
     <ProjectTools Include="%(PropertyPageSchema.Name)" />
   </ItemGroup>
-  
   
   <!--
   ///////////////////////////////////////////////////////////
@@ -77,7 +75,6 @@ Copyright Eugene Sadovoi (C)
     <Message Text="Boost root dir: &#34;$(BoostRoot)&#34;"  Importance="normal"/>
   </Target>
 
-
   <!--
   ///////////////////////////////////////////////////////////
   // Disambiguate directories
@@ -93,14 +90,13 @@ Copyright Eugene Sadovoi (C)
     </ItemGroup>
   </Target>
 
-
   <!--
   ///////////////////////////////////////////////////////////
   // Prepare command line options for build command
   ///////////////////////////////////////////////////////////-->
   <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" Returns="@(boost-options)" DependsOnTargets="GetDirs;" >
     <MSBuild Targets="GetXmlConfig" Projects="$(MSBuildProjectFullPath)" 
-             Properties="PropertyPageSchema=%(PropertyPageSchema.Identity);Name=%(PropertyPageSchema.Name);%(PropertyPageSchema.GetXmlConfig)" >
+             Properties="PropertyPageSchema=%(PropertyPageSchema.Identity);Name=%(PropertyPageSchema.Name);%(PropertyPageSchema.XmlConfig)" >
       <Output ItemName="options-%(PropertyPageSchema.Name)" TaskParameter="TargetOutputs"/>
     </MSBuild>
 
@@ -112,7 +108,6 @@ Copyright Eugene Sadovoi (C)
       <boost-options Condition="'$(AdditionalOptions)'!=''"                   Include="$(AdditionalOptions)" />
     </ItemGroup>
   </Target>
-
 
   <!--
   ///////////////////////////////////////////////////////////
@@ -137,7 +132,6 @@ Copyright Eugene Sadovoi (C)
     <Copy SourceFiles="@(BJamTools)" DestinationFolder="$(BoostRoot)\" UseHardlinksIfPossible="true" />
   </Target>
 
-
   <!--
   ///////////////////////////////////////////////////////////
   // Rebuild Boost Includes
@@ -146,17 +140,11 @@ Copyright Eugene Sadovoi (C)
     <Exec Command="b2.exe toolset=msvc headers @(dirs-options, ' ')" WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
 
-
     <!--
     ///////////////////////////////////////////////////////////
     // BUILD TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Build" DependsOnTargets="BoostRoot;PrepareForBoostBuild;BuildJamTool;BoostHeaders;" >
-  <!--
-    <Message Text="boost-options : @(boost-options, ' ')"  Importance="high"/>
-    <Message Text="env-vars : @(env-vars, ' ')" Condition=""  Importance="high"/>
-    <Message Text="IncludeDir : $(IncludeDir)" Condition=""  Importance="high"/>
-  -->
     <Exec Command="b2.exe @(boost-options, ' ')" WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
 

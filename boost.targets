@@ -15,6 +15,28 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // Defaults
   ///////////////////////////////////////////////////////////-->
+  <PropertyGroup Condition="'$(BoostDir)'!=''">
+    <BoostRoot>$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+    <OutputDir>$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</OutputDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+    <Boost-Inputs Include="$(BoostRoot)\libs\*\Include\boost\**\*.h" />
+    <Boost-Inputs Include="$(BoostRoot)\libs\*\Include\boost\**\*.hpp" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\src\**\*.c" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\src\**\*.cpp" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\include\boost\*.hpp" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\include\boost\*\*.h" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\include\boost\*\*.hpp" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\include\boost\*\*\*.h" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\include\boost\*\*\*.hpp" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\src\*\*.c" />
+    <BoostInputs Include="$(BoostRoot)\libs\*\src\*\*.cpp" />
+    <BoostOutputs Include="$(OutputDir)\lib\**\*.lib" />
+    <BoostOutputs Include="$(OutputDir)\lib\**\*.dll" />
+    -->
+  </ItemGroup>
 
   <!--
   ///////////////////////////////////////////////////////////
@@ -23,25 +45,9 @@ Copyright Eugene Sadovoi (C)
   <ItemGroup>
     <PropertyPageSchema Include="$(ProjectDir)boost.xml" >
       <Context>Project</Context>
-      <Name>Boost</Name>
-      <XmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;</XmlConfig>
     </PropertyPageSchema>
-    
-    <PropertyPageSchema Include="$(ProjectDir)cl.xml" >
-      <Name>cxxFlags</Name>
-      <SwitchPrefix>cxxflags=&#34;</SwitchPrefix>
-      <SwitchSuffix>&#34;</SwitchSuffix>
-      <XmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</XmlConfig>
-    </PropertyPageSchema>
-    
-    <PropertyPageSchema Include="$(ProjectDir)link.xml" >
-      <Name>LinkFlags</Name>
-      <SwitchPrefix>linkflags=&#34;</SwitchPrefix>
-      <SwitchSuffix>&#34;</SwitchSuffix>
-      <XmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</XmlConfig>
-    </PropertyPageSchema>
-
-    <ProjectTools Include="%(PropertyPageSchema.Name)" />
+    <PropertyPageSchema Include="$(ProjectDir)cxxflags.xml" />
+    <PropertyPageSchema Include="$(ProjectDir)linkflags.xml" />
   </ItemGroup>
   
   <!--
@@ -72,7 +78,7 @@ Copyright Eugene Sadovoi (C)
     <Error Condition="'$(BoostRoot)'==''"              Text="Boost Library not found."  ContinueOnError="false" />
     <Error Condition="!Exists('$(BoostRoot)\Jamroot')" Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" ContinueOnError="false" />
     
-    <Message Text="Boost root dir: &#34;$(BoostRoot)&#34;"  Importance="normal"/>
+    <Message Text="Boost root dir: &#34;$(BoostRoot)&#34;"  Importance="high"/>
   </Target>
 
   <!--
@@ -90,22 +96,49 @@ Copyright Eugene Sadovoi (C)
     </ItemGroup>
   </Target>
 
+  
   <!--
+  ///////////////////////////////////////////////////////////
+  // Adds proper prefix (example: cxxflags= ) to options
+  ///////////////////////////////////////////////////////////-->
+  <Target Name="ConfigHelper" Returns="$(return-options)" >
+
+    <ItemGroup>
+      <Properties Include="PropertyPageSchema=$(PropertyPageSchema)" />
+      <Properties Include="Quote=&#39;" />
+      <Properties Include="FullPath=true" />
+    </ItemGroup>
+
+    <MSBuild Targets="GetXmlConfig" Projects="$(MSBuildProjectFullPath)"
+             Properties="@(Properties)" >
+      <Output PropertyName="options" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+
+    <PropertyGroup Condition="'$(options)'!=''">
+      <return-options Condition="'$(Context)'=='Project'">$(options)</return-options>
+      <return-options Condition="'$(Context)'!='Project'">$([System.IO.Path]::GetFileNameWithoutExtension($(PropertyPageSchema)))=&#34;$(options)&#34;</return-options>
+    </PropertyGroup>
+  </Target>
+
+    <!--
   ///////////////////////////////////////////////////////////
   // Prepare command line options for build command
   ///////////////////////////////////////////////////////////-->
   <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" Returns="@(boost-options)" DependsOnTargets="GetDirs;" >
-    <MSBuild Targets="GetXmlConfig" Projects="$(MSBuildProjectFullPath)" 
-             Properties="PropertyPageSchema=%(PropertyPageSchema.Identity);Name=%(PropertyPageSchema.Name);%(PropertyPageSchema.XmlConfig)" >
-      <Output ItemName="options-%(PropertyPageSchema.Name)" TaskParameter="TargetOutputs"/>
-    </MSBuild>
 
     <ItemGroup Label="Build Settings">
       <boost-options Condition="'$(PlatformToolset)'  ==''" Include="toolset=msvc" />
       <boost-options Condition="'$(PlatformToolset)'  !=''" Include="$([System.String]::Format('toolset=msvc-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))" />
       <boost-options Condition="'@(dirs-options)'     !=''" Include="%(dirs-options.Identity)" />
-      <boost-options Condition="'@(options-%(PropertyPageSchema.Name))'!=''"  Include="%(PropertyPageSchema.SwitchPrefix);@(options-%(PropertyPageSchema.Name), ' ');%(PropertyPageSchema.SwitchSuffix)" />
-      <boost-options Condition="'$(AdditionalOptions)'!=''"                   Include="$(AdditionalOptions)" />
+    </ItemGroup>
+    
+    <MSBuild Targets="ConfigHelper" Projects="$(MSBuildProjectFullPath)" BuildInParallel="true"
+             Properties="PropertyPageSchema=%(PropertyPageSchema.Identity);Context=%(PropertyPageSchema.Context)" >
+      <Output ItemName="boost-options" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+    
+    <ItemGroup Label="Build Settings">
+      <boost-options Condition="'$(AdditionalOptions)'!=''" Include="$(AdditionalOptions)" />
     </ItemGroup>
   </Target>
 
@@ -145,6 +178,14 @@ Copyright Eugene Sadovoi (C)
     // BUILD TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Build" DependsOnTargets="BoostRoot;PrepareForBoostBuild;BuildJamTool;BoostHeaders;" >
+
+    <!--
+    Inputs="BoostInputs" Outputs="BoostOutputs"
+    <Message Text="BoostInputs: @(BoostInputs->Count())" Importance="high" />
+    <Message Text="BoostOutputs: @(BoostOutputs->Count())" Importance="high" />
+    <Message Text="Done:" Importance="high" />
+    -->
+    
     <Exec Command="b2.exe @(boost-options, ' ')" WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
 
@@ -162,11 +203,14 @@ Copyright Eugene Sadovoi (C)
     // CLEAN TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Clean" DependsOnTargets="GetDirs;BuildJamTool;" >
-    <RemoveDir Directories="$(IntDir)\Boost\"   ContinueOnError="true" />
+    <Exec Command="b2.exe toolset=msvc @(dirs-options, ' ') -clean"  WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" IgnoreExitCode="true" />
+    
+    <RemoveDir Directories="$(IntDir)\Boost\"   ContinueOnError="true"  />
     <RemoveDir Directories="$(OutDir)\lib\"     ContinueOnError="true" />
     <RemoveDir Directories="$(OutDir)\bin\"     ContinueOnError="true" />
     <RemoveDir Directories="$(OutDir)\include\" ContinueOnError="true" />
-    <!--<Exec Command="b2.exe toolset=msvc @(dirs-options, ' ') -clean"  WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" IgnoreExitCode="true" />-->
+    
+    <!--<BoostOutputs Remove="@(BoostOutputs)" />-->
   </Target>
 
  

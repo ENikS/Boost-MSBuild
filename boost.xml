@@ -47,7 +47,7 @@
 
   </Rule>
   
-  <Rule Name="Boost"
+  <Rule Name="boost"
         DisplayName="Boost"
         PageTemplate="tool"
         Order="20"
@@ -68,87 +68,75 @@
     <EnumProperty Name="boost-link" DisplayName="Configuration Type"
                   Description="Whether to build static or shared libraries."
                   Category="ProjectDefaults">
-      <EnumValue Name="shared" Switch="link=shared" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" />
-      <EnumValue Name="static" Switch="link=static" DisplayName="Static library" Description="Static Library (.lib)" />
+      <EnumValue Name="shared" Switch="link=shared" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" ></EnumValue>
+      <EnumValue Name="static" Switch="link=static" DisplayName="Static library" Description="Static Library (.lib)" ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="boost-runtime-link" DisplayName="Link To Runtime Library" 
                   Description="Specify runtime library for linking." Category="ProjectDefaults">
-      <EnumValue Name="shared" Switch="runtime-link=shared" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" />
-      <EnumValue Name="static" Switch="runtime-link=static" DisplayName="Static Libraries " Description="Link to static libraries (.lib)" />
+      <EnumValue Name="shared" Switch="runtime-link=shared" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" ></EnumValue>
+      <EnumValue Name="static" Switch="runtime-link=static" DisplayName="Static Libraries " Description="Link to static libraries (.lib)" ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="boost-threading" DisplayName="Threading"
                   Description="Whether to build single or multithreaded binaries." Category="ProjectDefaults">
-      <EnumValue Name="single" Switch="threading=single" DisplayName="Single Threaded" Description="Builds Single Threaded binaries" />
-      <EnumValue Name="multi" Switch="threading=multi" DisplayName="Multi Threaded" Description="Builds Multi Threaded binaries" />
+      <EnumValue Name="single" Switch="threading=single" DisplayName="Single Threaded" Description="Builds Single Threaded binaries" ></EnumValue>
+      <EnumValue Name="multi" Switch="threading=multi" DisplayName="Multi Threaded" Description="Builds Multi Threaded binaries" ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="boost-build-type" DisplayName="Build Type"
                   Description="Build the specified pre-defined set of variations of the libraries." Category="ProjectDefaults">
-      <EnumValue Name="minimal" Switch="--build-type=minimal" DisplayName="Minimal Build" Description="Builds a minimal set of variants." />
-      <EnumValue Name="complete" Switch="--build-type=complete" DisplayName="Complete Build" Description="Build all possible variations." />
+      <EnumValue Name="minimal" Switch="--build-type=minimal" DisplayName="Minimal Build" Description="Builds a minimal set of variants." ></EnumValue>
+      <EnumValue Name="complete" Switch="--build-type=complete" DisplayName="Complete Build" Description="Build all possible variations." ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="boost-layout" DisplayName="Layout"
                   Description="Determine whether to choose library names and header locations such that multiple versions of Boost or multiple compilers can be used on the same system." 
                   Category="ProjectDefaults">
-      <EnumValue Name="versioned" Switch="--layout=versioned" DisplayName="Versioned Layout" Description="Names of boost binaries include the Boost version number, name and version of the compiler and encoded build properties." />
-      <EnumValue Name="tagged" Switch="--layout=tagged" DisplayName="Tagged Layout" Description="Names of boost binaries include the encoded build properties such as variant and threading, but do not including compiler name and version, or Boost version." />
-      <EnumValue Name="system" Switch="--layout=system" DisplayName="System Layout" Description="Binaries names do not include the Boost version number or the name and version number of the compiler." />
+      <EnumValue Name="versioned" Switch="--layout=versioned" DisplayName="Versioned Layout" Description="Names of boost binaries include the Boost version number, name and version of the compiler and encoded build properties." ></EnumValue>
+      <EnumValue Name="tagged" Switch="--layout=tagged" DisplayName="Tagged Layout" Description="Names of boost binaries include the encoded build properties such as variant and threading, but do not including compiler name and version, or Boost version." ></EnumValue>
+      <EnumValue Name="system" Switch="--layout=system" DisplayName="System Layout" Description="Binaries names do not include the Boost version number or the name and version number of the compiler." ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="CharacterSet" DisplayName="Character Set" Visible="false" IncludeInCommandLine="false"
                   Description="Tells the compiler to use the specified character set; aids in localization issues."
                   Category="ProjectDefaults" 
                   F1Keyword="VC.Project.VCConfiguration.CharacterSet">
-      <EnumValue Name="NotSet" DisplayName="Not Set" Description="Not Set" />
-      <EnumValue Name="Unicode" DisplayName="Use Unicode Character Set" Description="Use Unicode Character Set" />
-      <EnumValue Name="MultiByte" DisplayName="Use Multi-Byte Character Set" Description="Use Multi-Byte Character Set" />
+      <EnumValue Name="NotSet" DisplayName="Not Set" Description="Not Set" ></EnumValue>
+      <EnumValue Name="Unicode" DisplayName="Use Unicode Character Set" Description="Use Unicode Character Set" ></EnumValue>
+      <EnumValue Name="MultiByte" DisplayName="Use Multi-Byte Character Set" Description="Use Multi-Byte Character Set" ></EnumValue>
     </EnumProperty>
-    <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime Support" Visible="false" IncludeInCommandLine="false"
-                  Description="Specifies whether this configuration supports the Common Language Runtime. This is incompatible with some other settings, e.g. runtime checks. See help for /clr family of C++ compiler switches for full list of conflicts."
-                  Category="ProjectDefaults"
-                  F1Keyword="VC.Project.VCConfiguration.ManagedExtensions">
-      <EnumValue Name="false" DisplayName="No Common Language Runtime Support"
-                 Description="No Common Language Runtime Support" />
-      <EnumValue Name="true" DisplayName="Common Language Runtime Support (/clr)"
-                 Description="Common Language Runtime Support (/clr)"/>
-      <EnumValue Name="Pure" DisplayName="Pure MSIL Common Language Runtime Support (/clr:pure)"
-                 Description="Pure MSIL Common Language Runtime Support (/clr:pure)" />
-      <EnumValue Name="Safe" DisplayName="Safe MSIL Common Language Runtime Support (/clr:safe)"
-                 Description="Safe MSIL Common Language Runtime Support (/clr:safe)" />
-      <EnumValue Name="OldSyntax" DisplayName="Common Language Runtime Support, Old Syntax (/clr:oldSyntax)"
-                 Description="Common Language Runtime Support, Old Syntax (/clr:oldSyntax)" />
-    </EnumProperty>
+    
     <EnumProperty Name="boost-windows-api" DisplayName="Windows Runtime support" 
                   Description="Specify which Windows API set to target." Category="ProjectDefaults" >
-      <EnumValue Name="desktop" Switch="windows-api=desktop" DisplayName="Windows Desktop" Description="Regular Windows binaries" />
-      <EnumValue Name="store"   Switch="windows-api=store"   DisplayName="Windows Store" Description="Binaries for Windows Store"/>
-      <EnumValue Name="phone"   Switch="windows-api=phone"   DisplayName="Windows Phone" Description="Binaries for Windows Phone" />
+      <EnumValue Name="desktop" Switch="windows-api=desktop" DisplayName="Windows Desktop" Description="Regular Windows binaries" ></EnumValue>
+      <EnumValue Name="store"   Switch="windows-api=store"   DisplayName="Windows Store" Description="Binaries for Windows Store" ></EnumValue>
+      <EnumValue Name="phone"   Switch="windows-api=phone"   DisplayName="Windows Phone" Description="Binaries for Windows Phone" ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="BoostDeployment" DisplayName="Deployment Type"
                   Description="Determine whether to Stage or Install the build" Category="ProjectDefaults" >
-      <EnumValue Name="Stage" Switch="stage" DisplayName="Stage Boost" Description="Install headers and compiled library files to the output directory." />
-      <EnumValue Name="Install" Switch="install"   DisplayName="Install Boost" Description="Build and install only compiled library files to the output directory."/>
+      <EnumValue Name="Stage" Switch="stage" DisplayName="Stage Boost" Description="Install headers and compiled library files to the output directory." ></EnumValue>
+      <EnumValue Name="Install" Switch="install"   DisplayName="Install Boost" Description="Build and install only compiled library files to the output directory."></EnumValue>
     </EnumProperty>
     <EnumProperty Name="BoostVerbosity" DisplayName="Output Verbosity"
                   Description="Specifies how much information displayed during build." Category="ProjectDefaults" >
-      <EnumValue Name="Level0" Switch="d0"  DisplayName="Show Nothing" />
-      <EnumValue Name="Level1" Switch="d+1" DisplayName="Level 1"  />
-      <EnumValue Name="Level2" Switch="d+2" DisplayName="Show commands as they are executed" Description="." />
-      <EnumValue Name="Level3" Switch="d+3" DisplayName="Level 3" />
-      <EnumValue Name="Level4" Switch="d+4" DisplayName="Level 4" />
-      <EnumValue Name="Level5" Switch="d+5" DisplayName="Level 5" />
-      <EnumValue Name="Level6" Switch="d+6" DisplayName="Level 6" />
-      <EnumValue Name="Level7" Switch="d+7" DisplayName="Level 7" />
-      <EnumValue Name="Level8" Switch="d+8" DisplayName="Level 8" />
-      <EnumValue Name="Level9" Switch="d+9" DisplayName="Output everything" />
+      <EnumValue Name="Level0" Switch="-d0"    DisplayName="Turn off all diagnostic output" ></EnumValue>
+      <EnumValue Name="Level1" Switch="-d+1"   DisplayName="Show the actions taken for building targets" ></EnumValue>
+      <EnumValue Name="Level2" Switch="-d+2"   DisplayName="Show commands as they are executed" ></EnumValue>
+      <EnumValue Name="Level3" Switch="-d+3"   DisplayName="Dependency analysis, target/source..." ></EnumValue>
+      <EnumValue Name="Level4" Switch="-d+4"   DisplayName="Show arguments of shell invocations" ></EnumValue>
+      <EnumValue Name="Level5" Switch="-d+5"   DisplayName="Rule invocations and variable expansions" ></EnumValue>
+      <EnumValue Name="Level6" Switch="-d+6"   DisplayName="Show directory/header file/archive scans" ></EnumValue>
+      <EnumValue Name="Level7" Switch="-d+7"   DisplayName="Show variable settings" ></EnumValue>
+      <EnumValue Name="Level8" Switch="-d+8"   DisplayName="Variable fetches, expansions, 'if' expressions" ></EnumValue>
+      <EnumValue Name="Level9" Switch="-d+9"   DisplayName="Variable manipulation, tokens, and memory" ></EnumValue>
+      <EnumValue Name="Level10" Switch="-d+10" DisplayName="Show execution times for rules" ></EnumValue>
+      <EnumValue Name="Level11" Switch="-d+11" DisplayName="Show parsing progress of Jamfiles" ></EnumValue>
+      <EnumValue Name="Level12" Switch="-d+12" DisplayName="Show graph for target dependencies" ></EnumValue>
+      <EnumValue Name="Level13" Switch="-d+13" DisplayName="Changes in target status (fate)" ></EnumValue>
     </EnumProperty>
-    <BoolProperty Name="StopOnError" DisplayName="Stop on first error" Description="Stop at first error" Category="ProjectDefaults" Switch="-q">
-    </BoolProperty>
-    <BoolProperty Name="ConfigChecks" DisplayName="Rerun Checks" Description="Always Rerun Configuration Checks" Category="ProjectDefaults" Switch="--reconfigure">
-    </BoolProperty>
+    <BoolProperty Name="StopOnError" DisplayName="Stop on first error" Description="Stop at first error" Category="ProjectDefaults" Switch="-q"></BoolProperty>
+    <BoolProperty Name="ConfigChecks" DisplayName="Rerun Checks" Description="Always Rerun Configuration Checks" Category="ProjectDefaults" Switch="--reconfigure"></BoolProperty>
     <EnumProperty Name="BoostDebug" DisplayName="Debug Options"
                   Description="Specifies various debug options" Category="ProjectDefaults" >
-      <EnumValue Name="configuration" Switch="--debug-configuration" DisplayName="Debug Configuration" Description="Diagnose configuration." />
-      <EnumValue Name="building" Switch="--debug-building" DisplayName="Debug Building" Description="Report which targets are built with what properties." />
-      <EnumValue Name="generator" Switch="--debug-generator"   DisplayName="Debug Generator" Description="Diagnose generator search/execution."/>
+      <EnumValue Name="configuration" Switch="--debug-configuration" DisplayName="Debug Configuration" Description="Diagnose configuration." ></EnumValue>
+      <EnumValue Name="building" Switch="--debug-building" DisplayName="Debug Building" Description="Report which targets are built with what properties." ></EnumValue>
+      <EnumValue Name="generator" Switch="--debug-generator"   DisplayName="Debug Generator" Description="Diagnose generator search/execution."></EnumValue>
     </EnumProperty>
 
 
@@ -186,17 +174,17 @@
     <EnumProperty Name="Configuration" DisplayName="Build Configuration"
                   Description="Build Configuration." Category="Command Line"
                   Visible="false" IncludeInCommandLine="true" ReadOnly="true">
-      <EnumValue Name="Release" Switch="variant=release" DisplayName="Release" Description="Release" />
-      <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug"/>
+      <EnumValue Name="Release" Switch="variant=release" DisplayName="Release" Description="Release" ></EnumValue>
+      <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug" ></EnumValue>
     </EnumProperty>
     <!--Compression-->
     <BoolProperty ReverseSwitch="-sNO_COMPRESSION" Name="enable-compression" DisplayName="Enable Compression" Description="Enable support for compression filters." Category="Compression"
-                  HelpUrl="http://www.boost.org/doc/libs/1_57_0/libs/iostreams/doc/classes/bzip2.html#installation"/>
+                  HelpUrl="http://www.boost.org/doc/libs/1_57_0/libs/iostreams/doc/classes/bzip2.html#installation" ></BoolProperty>
     <BoolProperty ReverseSwitch="-sNO_BZIP2"       Name="enable-bzip2"       DisplayName="Enable BZip2"       Description="Enable support for BZip2 filters." Category="Compression"
-                  HelpUrl=""/>
+                  HelpUrl="" ></BoolProperty>
     <StringProperty Name="bzip2-binary" DisplayName="Name of the LIBBZ2 binary" Category="Compression"
                     Switch="-sBZIP2_BINARY" Separator="=" Default="libbz2"
-                    Description="Name of the libbz2 binary, not including the file extension. If linking with a dynamic build of libbz2, specify the name of the import library."  />
+                    Description="Name of the libbz2 binary, not including the file extension. If linking with a dynamic build of libbz2, specify the name of the import library."  ></StringProperty>
 
     <StringProperty Name="bzip2-include" DisplayName="LIBBZ2 Headers" Category="Compression" 
                     Switch="-sBZIP2_INCLUDE" Separator="=" Default="$(bzip2-source)"

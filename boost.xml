@@ -122,7 +122,36 @@
       <EnumValue Name="store"   Switch="windows-api=store"   DisplayName="Windows Store" Description="Binaries for Windows Store"/>
       <EnumValue Name="phone"   Switch="windows-api=phone"   DisplayName="Windows Phone" Description="Binaries for Windows Phone" />
     </EnumProperty>
-    <BoolProperty Switch="stage" Name="stage_library" DisplayName="Stage" Description="Install library files here Default; ./stagey." Category="ProjectDefaults" HelpUrl=""/>
+    <EnumProperty Name="BoostDeployment" DisplayName="Deployment Type"
+                  Description="Determine whether to Stage or Install the build" Category="ProjectDefaults" >
+      <EnumValue Name="Stage" Switch="stage" DisplayName="Stage Boost" Description="Install headers and compiled library files to the output directory." />
+      <EnumValue Name="Install" Switch="install"   DisplayName="Install Boost" Description="Build and install only compiled library files to the output directory."/>
+    </EnumProperty>
+    <EnumProperty Name="BoostVerbosity" DisplayName="Output Verbosity"
+                  Description="Specifies how much information displayed during build." Category="ProjectDefaults" >
+      <EnumValue Name="Level0" Switch="d0"  DisplayName="Show Nothing" />
+      <EnumValue Name="Level1" Switch="d+1" DisplayName="Level 1"  />
+      <EnumValue Name="Level2" Switch="d+2" DisplayName="Show commands as they are executed" Description="." />
+      <EnumValue Name="Level3" Switch="d+3" DisplayName="Level 3" />
+      <EnumValue Name="Level4" Switch="d+4" DisplayName="Level 4" />
+      <EnumValue Name="Level5" Switch="d+5" DisplayName="Level 5" />
+      <EnumValue Name="Level6" Switch="d+6" DisplayName="Level 6" />
+      <EnumValue Name="Level7" Switch="d+7" DisplayName="Level 7" />
+      <EnumValue Name="Level8" Switch="d+8" DisplayName="Level 8" />
+      <EnumValue Name="Level9" Switch="d+9" DisplayName="Output everything" />
+    </EnumProperty>
+    <BoolProperty Name="StopOnError" DisplayName="Stop on first error" Description="Stop at first error" Category="ProjectDefaults" Switch="-q">
+    </BoolProperty>
+    <BoolProperty Name="ConfigChecks" DisplayName="Rerun Checks" Description="Always Rerun Configuration Checks" Category="ProjectDefaults" Switch="--reconfigure">
+    </BoolProperty>
+    <EnumProperty Name="BoostDebug" DisplayName="Debug Options"
+                  Description="Specifies various debug options" Category="ProjectDefaults" >
+      <EnumValue Name="configuration" Switch="--debug-configuration" DisplayName="Debug Configuration" Description="Diagnose configuration." />
+      <EnumValue Name="building" Switch="--debug-building" DisplayName="Debug Building" Description="Report which targets are built with what properties." />
+      <EnumValue Name="generator" Switch="--debug-generator"   DisplayName="Debug Generator" Description="Diagnose generator search/execution."/>
+    </EnumProperty>
+
+
 
     <!--Libraries-->
     <BoolProperty Switch="--with-atomic" ReverseSwitch="--without-atomic" Name="atomic_library" DisplayName="atomic" Description="Build, stage, or install 'atomic' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/1_57_0/doc/html/atomic.html"/>
@@ -161,51 +190,51 @@
       <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug"/>
     </EnumProperty>
     <!--Compression-->
-    <BoolProperty ReverseSwitch="-sNO_COMPRESSION" Name="enable-compression" DisplayName="Enable Compression" Description="Enable support for compression filters." Category="Compression" IncludeInCommandLine="false"
+    <BoolProperty ReverseSwitch="-sNO_COMPRESSION" Name="enable-compression" DisplayName="Enable Compression" Description="Enable support for compression filters." Category="Compression"
                   HelpUrl="http://www.boost.org/doc/libs/1_57_0/libs/iostreams/doc/classes/bzip2.html#installation"/>
-    <BoolProperty ReverseSwitch="-sNO_BZIP2"       Name="enable-bzip2"       DisplayName="Enable BZip2"       Description="Enable support for BZip2 filters." Category="Compression" IncludeInCommandLine="false"
+    <BoolProperty ReverseSwitch="-sNO_BZIP2"       Name="enable-bzip2"       DisplayName="Enable BZip2"       Description="Enable support for BZip2 filters." Category="Compression"
                   HelpUrl=""/>
-    <StringProperty Name="bzip2-binary" DisplayName="Name of the LIBBZ2 binary" Category="Compression"     IncludeInCommandLine="false"
+    <StringProperty Name="bzip2-binary" DisplayName="Name of the LIBBZ2 binary" Category="Compression"
                     Switch="-sBZIP2_BINARY" Separator="=" Default="libbz2"
                     Description="Name of the libbz2 binary, not including the file extension. If linking with a dynamic build of libbz2, specify the name of the import library."  />
 
-    <StringProperty Name="bzip2-include" DisplayName="LIBBZ2 Headers" Category="Compression"   IncludeInCommandLine="false"
+    <StringProperty Name="bzip2-include" DisplayName="LIBBZ2 Headers" Category="Compression" 
                     Switch="-sBZIP2_INCLUDE" Separator="=" Default="$(bzip2-source)"
                     Description="Path to the libbz2 headers, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="bzip2-libpath" DisplayName="LIBBZ2 Binary" Category="Compression"     IncludeInCommandLine="false"
+    <StringProperty Name="bzip2-libpath" DisplayName="LIBBZ2 Binary" Category="Compression" 
                     Switch="-sBZIP2_LIBPATH" Separator="="
                     Description="Path to the libbz2 binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of libbz2, specify the path to the import library."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="bzip2-source" DisplayName="LIBBZ2 Source" Category="Compression"   IncludeInCommandLine="false"
+    <StringProperty Name="bzip2-source" DisplayName="LIBBZ2 Source" Category="Compression" 
                     Switch="-sBZIP2_SOURCE" Separator="="
                     Description="Path to the libbz2 source files, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <BoolProperty ReverseSwitch="-sNO_ZZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression"   IncludeInCommandLine="false"
+    <BoolProperty ReverseSwitch="-sNO_ZZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression"  
                   HelpUrl=""/>
-    <StringProperty Name="zlib-binary" DisplayName="Name of the ZLIB binary" Category="Compression"  IncludeInCommandLine="false"
+    <StringProperty Name="zlib-binary" DisplayName="Name of the ZLIB binary" Category="Compression" 
                     Switch="-sZLIB_BINARY" Separator="=" Default="zdll"
                     Description="Name of the zlib binary, not including the file extension. If linking with a dynamic build of zlib, specify the name of the import library."  />
 
-    <StringProperty Name="zlib-include" DisplayName="ZLIB Headers" Category="Compression"  IncludeInCommandLine="false"
+    <StringProperty Name="zlib-include" DisplayName="ZLIB Headers" Category="Compression" 
                     Switch="-sZLIB_INCLUDE" Separator="=" Default="$(zlib-source)"
                     Description="Path to the zlib headers, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="zlib-libpath" DisplayName="ZLIB Binary" Category="Compression"  IncludeInCommandLine="false"
+    <StringProperty Name="zlib-libpath" DisplayName="ZLIB Binary" Category="Compression"
                     Switch="-sZLIB_LIBPATH" Separator="="
                     Description="Path to the zlib binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of zlib, specify the path to the import library."
                     Subtype="folder"
                     HelpUrl="" />
 
-    <StringProperty Name="zlib-source" DisplayName="ZLIB Source" Category="Compression"  IncludeInCommandLine="false"
+    <StringProperty Name="zlib-source" DisplayName="ZLIB Source" Category="Compression" 
                     Switch="-sZLIB_SOURCE" Separator="="
                     Description="Path to the zlib source files, if they're not in a location where they'll be found automatically."
                     Subtype="folder"

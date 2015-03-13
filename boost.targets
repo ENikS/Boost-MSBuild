@@ -13,67 +13,69 @@ Copyright Eugene Sadovoi (C)
 
   <!--
   ///////////////////////////////////////////////////////////
-  // Local variables
+  // Defaults
   ///////////////////////////////////////////////////////////-->
-  <PropertyGroup Label="Defaults">
-    <BoostDir Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
-  </PropertyGroup>
 
+  
   <!--
   ///////////////////////////////////////////////////////////
-  // Resolving path to BOOST
-  ///////////////////////////////////////////////////////////-->
-  <ItemGroup Condition="'$(BoostDir)'==''" >
-    <Jamroot Include="$(ProjectDir)*/Jamroot" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(BoostDir)'==''">
-    <JamrootDir>@(Jamroot)</JamrootDir>
-    <BoostDir>$([System.IO.Path]::GetDirectoryName($(JamrootDir)).TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
-    <BoostDir Label="Check if BOOST_ROOT set"             >$(BOOST_ROOT.TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
-    <BoostDir Label="Check if Jamroot file in local dir"
-              Condition="'$(BoostDir)'=='' And 
-                           Exists('$(ProjectDir)Jamroot')">$(ProjectDir.TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
-    <BoostDir Label="Check if Jamroot file in ./.. dir"
-              Condition="'$(BoostDir)'=='' And 
-                           Exists('$(ProjectDir)..\Jamroot')">$([System.IO.Path]::GetFullPath("$(ProjectDir)..\").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
-    <BoostDir Label="Check if Jamroot file in ./../.. dir"
-              Condition="'$(BoostDir)'=='' And 
-                           Exists('$(ProjectDir)..\..\Jamroot')">$([System.IO.Path]::GetFullPath("$(ProjectDir)..\..\").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostDir>
-  </PropertyGroup>
-
-  <ItemGroup Label="Environment Variables set during command execution">
-    <BuildEnvVars Include="VS_UNICODE_OUTPUT=" />
-  </ItemGroup>
-
-
-  <!--
-  ///////////////////////////////////////////////////////////
-  // Property Pages Configuration
+  // UI Configuration
   ///////////////////////////////////////////////////////////-->
   <ItemGroup>
-    <PropertyPageSchema Include="$(ProjectDir)\boost.xml" >
+    <PropertyPageSchema Include="$(ProjectDir)boost.xml" >
       <Context>Project</Context>
       <Name>Boost</Name>
-      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;</GetXmlConfig>
+      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;</GetXmlConfig>
     </PropertyPageSchema>
     
-    <PropertyPageSchema Include="cl.xml" >
+    <PropertyPageSchema Include="$(ProjectDir)cl.xml" >
       <Name>cxxFlags</Name>
       <SwitchPrefix>cxxflags=&#34;</SwitchPrefix>
       <SwitchSuffix>&#34;</SwitchSuffix>
-      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;Quote=&#39;</GetXmlConfig>
+      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</GetXmlConfig>
     </PropertyPageSchema>
     
-    <PropertyPageSchema Include="link.xml" >
+    <PropertyPageSchema Include="$(ProjectDir)link.xml" >
       <Name>LinkFlags</Name>
       <SwitchPrefix>linkflags=&#34;</SwitchPrefix>
       <SwitchSuffix>&#34;</SwitchSuffix>
-      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;Quote=&#39;</GetXmlConfig>
+      <GetXmlConfig>TrimFolderEnd=true;SmartQuotes=true;FullPath=true;Quote=&#39;</GetXmlConfig>
     </PropertyPageSchema>
 
     <ProjectTools Include="%(PropertyPageSchema.Name)" />
   </ItemGroup>
+  
+  
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Resolve Boost root dir
+  ///////////////////////////////////////////////////////////-->
+  <Target Name="BoostRoot" Condition="'$(BoostRoot)'==''" Returns="BoostRoot">
+
+    <PropertyGroup Condition="'$(BoostDir)'==''">
+      <JamrootDir>$(ProjectDir)*/Jamroot</JamrootDir>
+      <BoostRoot>$([System.IO.Path]::GetDirectoryName($(JamrootDir)).TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+      <BoostRoot Label="Check if BOOST_ROOT set"             >$(BOOST_ROOT.TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+      <BoostRoot Label="Check if Jamroot file in local dir"
+                Condition="'$(BoostDir)'=='' And 
+                           Exists('$(ProjectDir)Jamroot')">$(ProjectDir.TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+      <BoostRoot Label="Check if Jamroot file in ./.. dir"
+                Condition="'$(BoostDir)'=='' And 
+                           Exists('$(ProjectDir)..\Jamroot')">$([System.IO.Path]::GetFullPath("$(ProjectDir)..\").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+      <BoostRoot Label="Check if Jamroot file in ./../.. dir"
+              Condition="'$(BoostDir)'=='' And 
+                           Exists('$(ProjectDir)..\..\Jamroot')">$([System.IO.Path]::GetFullPath("$(ProjectDir)..\..\").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(BoostDir)'!=''">
+      <BoostRoot>$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+    </PropertyGroup>
+    
+    <Error Condition="'$(BoostRoot)'==''"              Text="Boost Library not found."  ContinueOnError="false" />
+    <Error Condition="!Exists('$(BoostRoot)\Jamroot')" Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" ContinueOnError="false" />
+    
+    <Message Text="Boost root dir: &#34;$(BoostRoot)&#34;"  Importance="normal"/>
+  </Target>
 
 
   <!--
@@ -82,53 +84,32 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////-->
   <Target Name="GetDirs" Returns="dirs-options">
     <ItemGroup>
-      <dirs-options Condition="'$(IntDir)'!=''" Include="--build-dir=&#34;$([System.IO.Path]::GetFullPath('$(IntDir)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
-      <dirs-options Condition="'$(OutDir)'!=''" Include="--stagedir=&#34;$([System.IO.Path]::GetFullPath('$(OutDir)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
+      <dirs-options Condition="'$(IntDir)'!=''" 
+                    Include="--build-dir=&#34;$([System.IO.Path]::GetFullPath('$(IntDir)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
+      <dirs-options Condition="'$(OutDir)'!=''" 
+                    Include="--stagedir=&#34;$([System.IO.Path]::GetFullPath('$(OutDir)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
+      <dirs-options Condition="'$(OutDir)'!='' And '$(BoostDeployment)'=='Install'" 
+                    Include="--prefix=&#34;$([System.IO.Path]::GetFullPath('$(OutDir)').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))&#34;" />
     </ItemGroup>
   </Target>
 
 
-  <!--
-  ///////////////////////////////////////////////////////////
-  // Prepare Environment Variables
-  ///////////////////////////////////////////////////////////-->
-  <Target Name="GetEnvVars" Returns="env-vars">
-    <ItemGroup>
-      <env-vars Condition="'$(enable-compression)'=='false'" Include="NO_COMPRESSION=1" />
-      <env-vars Condition="'$(enable-bzip2)'      =='false'" Include="NO_BZIP2=1" />
-      <env-vars Condition="'$(enable-zlib)'       =='false'" Include="NO_ZZLIB=1" />
-      <env-vars Condition="'$(bzip2-binary)'      !=''"      Include="BZIP2_BINARY=$([System.IO.Path]::GetFullPath($(bzip2-binary)))" />
-      <env-vars Condition="'$(bzip2-include)'     !=''"      Include="BZIP2_INCLUDE=$([System.IO.Path]::GetFullPath($(bzip2-include)))" />
-      <env-vars Condition="'$(bzip2-libpath)'     !=''"      Include="BZIP2_LIBPATH=$([System.IO.Path]::GetFullPath($(bzip2-libpath)))" />
-      <env-vars Condition="'$(bzip2-source)'      !=''"      Include="BZIP2_SOURCE=$([System.IO.Path]::GetFullPath($(bzip2-source)))" />
-      <env-vars Condition="'$(zlib-binary)'       !=''"      Include="ZLIB_BINARY=$([System.IO.Path]::GetFullPath($(zlib-binary)))" />
-      <env-vars Condition="'$(zlib-include)'      !=''"      Include="ZLIB_INCLUDE=$([System.IO.Path]::GetFullPath($(zlib-include)))" />
-      <env-vars Condition="'$(zlib-libpath)'      !=''"      Include="ZLIB_LIBPATH=$([System.IO.Path]::GetFullPath($(zlib-libpath)))" />
-      <env-vars Condition="'$(zlib-source)'       !=''"      Include="ZLIB_SOURCE=$([System.IO.Path]::GetFullPath($(zlib-source)))" />
-      <env-vars Include="@(BuildEnvVars)" />
-    </ItemGroup>
-  </Target>
-  
-  
   <!--
   ///////////////////////////////////////////////////////////
   // Prepare command line options for build command
   ///////////////////////////////////////////////////////////-->
   <Target Name="PrepareForBoostBuild" Label="Prepare boost build options" Returns="@(boost-options)" DependsOnTargets="GetDirs;" >
-    <Error ContinueOnError="false" Text="Boost Library not found." Condition="'$(BoostDir)'==''" />
-    <Error Condition="!Exists('$(BoostDir)\Jamroot')" Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" ContinueOnError="false" />
-
-    <MSBuild Targets="GetXmlConfig"
-             Projects="$(MSBuildProjectFullPath)" 
+    <MSBuild Targets="GetXmlConfig" Projects="$(MSBuildProjectFullPath)" 
              Properties="PropertyPageSchema=%(PropertyPageSchema.Identity);Name=%(PropertyPageSchema.Name);%(PropertyPageSchema.GetXmlConfig)" >
       <Output ItemName="options-%(PropertyPageSchema.Name)" TaskParameter="TargetOutputs"/>
     </MSBuild>
+
     <ItemGroup Label="Build Settings">
       <boost-options Condition="'$(PlatformToolset)'  ==''" Include="toolset=msvc" />
       <boost-options Condition="'$(PlatformToolset)'  !=''" Include="$([System.String]::Format('toolset=msvc-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))" />
       <boost-options Condition="'@(dirs-options)'     !=''" Include="%(dirs-options.Identity)" />
-      <boost-options Condition="'@(options-%(PropertyPageSchema.Name))'!=''" Include="%(PropertyPageSchema.SwitchPrefix);@(options-%(PropertyPageSchema.Name), ' ');%(PropertyPageSchema.SwitchSuffix)" />
-      <boost-options Condition="'$(AdditionalOptions)'!=''" Include="$(AdditionalOptions)" />
+      <boost-options Condition="'@(options-%(PropertyPageSchema.Name))'!=''"  Include="%(PropertyPageSchema.SwitchPrefix);@(options-%(PropertyPageSchema.Name), ' ');%(PropertyPageSchema.SwitchSuffix)" />
+      <boost-options Condition="'$(AdditionalOptions)'!=''"                   Include="$(AdditionalOptions)" />
     </ItemGroup>
   </Target>
 
@@ -141,41 +122,50 @@ Copyright Eugene Sadovoi (C)
     <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.h" />
     <EngineSourceFiles Include="$(BoostDir)\tools\build\src\engine\*.c" />
   </ItemGroup>
+  
   <Target Name="BuildJamTool" Label="Building BJAM engine"
-          Inputs="@(EngineSourceFiles)" 
-          Outputs="$(BoostDir)\b2.exe" >
-    
+          Inputs="@(EngineSourceFiles)" Outputs="$(BoostRoot)\b2.exe" DependsOnTargets="BoostRoot;" >
     <Error ContinueOnError="false" Text="Engine source files are missing, did you update submodules?" Condition="@(EngineSourceFiles)==''" />
-    <Message Text="Building Engine..." />
-    <Exec Command="call build.bat" WorkingDirectory="$(BoostDir)\tools\build\src\engine\" EnvironmentVariables="@(BuildEnvVars)" />
+    
+    <Message Text="Building Engine..." Importance="normal" />
+    <Exec Command="call build.bat" WorkingDirectory="$(BoostRoot)\tools\build\src\engine\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
+    
     <ItemGroup Label="List and copy all built exe files" >
       <BJamTools Include="$(BoostDir)\tools\build\src\engine\bin.ntx86\*.exe" Condition="Exists('$(BoostDir)\tools\build\src\engine\bin.ntx86')" />
       <BJamTools Include="$(BoostDir)\tools\build\src\engine\bin.ntx86_64\*.exe" Condition="Exists('$(BoostDir)\tools\build\src\engine\bin.ntx86_64')" />
     </ItemGroup>
-    <Copy SourceFiles="@(BJamTools)" DestinationFolder="$(BoostDir)\" UseHardlinksIfPossible="true" />
+    <Copy SourceFiles="@(BJamTools)" DestinationFolder="$(BoostRoot)\" UseHardlinksIfPossible="true" />
   </Target>
 
 
   <!--
+  ///////////////////////////////////////////////////////////
+  // Rebuild Boost Includes
+  ///////////////////////////////////////////////////////////-->
+  <Target Name="BoostHeaders"  Condition="!Exists('$(BoostRoot)\boost')" DependsOnTargets="GetDirs;BoostRoot;BuildJamTool;" >
+    <Exec Command="b2.exe toolset=msvc headers @(dirs-options, ' ')" WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
+  </Target>
+
+
+    <!--
     ///////////////////////////////////////////////////////////
     // BUILD TARGET
     /////////////////////////////////////////////////////////// -->
-  <Target Name="Build" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;" >
+  <Target Name="Build" DependsOnTargets="BoostRoot;PrepareForBoostBuild;BuildJamTool;BoostHeaders;" >
   <!--
-    <Message Text="boost-options : @(boost-options, ' ')" Condition=""  Importance="high"/>
-    <Message Text="dirs-options : @(dirs-options, ' ')"  Importance="high"/>
+    <Message Text="boost-options : @(boost-options, ' ')"  Importance="high"/>
+    <Message Text="env-vars : @(env-vars, ' ')" Condition=""  Importance="high"/>
+    <Message Text="IncludeDir : $(IncludeDir)" Condition=""  Importance="high"/>
   -->
-    <Exec Command="b2.exe toolset=msvc headers @(dirs-options, ' ')" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe @(boost-options, ' ')"     WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
+    <Exec Command="b2.exe @(boost-options, ' ')" WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
 
   <!--
     ///////////////////////////////////////////////////////////
     // REBUILD TARGET
     /////////////////////////////////////////////////////////// -->
-  <Target Name="Rebuild" DependsOnTargets="GetDirs;GetEnvVars;PrepareForBoostBuild;BuildJamTool;">
-    <Exec Command="b2.exe toolset=msvc headers @(dirs-options, ' ')" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" Condition="!Exists('$(BoostDir)\boost')" />
-    <Exec Command="b2.exe @(boost-options, ' ') -a" WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(env-vars)" Condition="Exists('$(BoostDir)\boost')" />
+  <Target Name="Rebuild" DependsOnTargets="BoostRoot;PrepareForBoostBuild;BuildJamTool;BoostHeaders;">
+    <Exec Command="b2.exe @(boost-options, ' ') -a" WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
 
 
@@ -184,7 +174,11 @@ Copyright Eugene Sadovoi (C)
     // CLEAN TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Clean" DependsOnTargets="GetDirs;BuildJamTool;" >
-    <Exec Command="b2.exe toolset=msvc @(dirs-options, ' ') --clean"  WorkingDirectory="$(BoostDir)\" EnvironmentVariables="@(BuildEnvVars)" IgnoreExitCode="true" />
+    <RemoveDir Directories="$(IntDir)\Boost\"   ContinueOnError="true" />
+    <RemoveDir Directories="$(OutDir)\lib\"     ContinueOnError="true" />
+    <RemoveDir Directories="$(OutDir)\bin\"     ContinueOnError="true" />
+    <RemoveDir Directories="$(OutDir)\include\" ContinueOnError="true" />
+    <!--<Exec Command="b2.exe toolset=msvc @(dirs-options, ' ') -clean"  WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" IgnoreExitCode="true" />-->
   </Target>
 
  

@@ -32,8 +32,8 @@
     <boost-link>static</boost-link>
     <context_library>
     </context_library>
-    <AdditionalOptions>-n $(AdditionalOptions)</AdditionalOptions>
     <IntDir>..\Temp dir</IntDir>
+    <OutDir>..\Temp</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v120</PlatformToolset>
@@ -63,7 +63,20 @@
   </PropertyGroup>
   <PropertyGroup Label="cxxflags" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <AdditionalIncludeDirectories>D:\Articles;D:\boost\boost;$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    <cxxAdditionalIncludeDirectories>D:\Articles;D:\bitcoin dev master\dependencies;$(cxxAdditionalIncludeDirectories)</cxxAdditionalIncludeDirectories>
+    <cxxAdditionalIncludeDirectories>
+    </cxxAdditionalIncludeDirectories>
+    <cxxPreprocessToFile>
+    </cxxPreprocessToFile>
+    <cxxPrecompiledHeaderFile>
+    </cxxPrecompiledHeaderFile>
+  </PropertyGroup>
+  <PropertyGroup Label="Boost" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <zlib-source>..\bitcoin-dev-master\dependencies\zlib</zlib-source>
+    <boost-build-type>minimal</boost-build-type>
+    <python_library>false</python_library>
+    <BoostDeployment>Stage</BoostDeployment>
+    <boost-layout>system</boost-layout>
+    <StopOnError>true</StopOnError>
   </PropertyGroup>
   <Import Condition="'$(VisualStudioVersion)'=='12.0'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

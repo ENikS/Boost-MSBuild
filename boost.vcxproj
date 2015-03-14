@@ -51,8 +51,6 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup>
-  </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(VisualStudioVersion)'=='12.0'" Label="Import Settings">
     <UseDefaultProjectTools>false</UseDefaultProjectTools>
     <UseDefaultPropertyPageSchemas>false</UseDefaultPropertyPageSchemas>
@@ -64,14 +62,11 @@
     <boost-layout>system</boost-layout>
     <BoostDeployment>Stage</BoostDeployment>
     <zlib-source>..\bitcoin-dev-master\dependencies\zlib</zlib-source>
-    <BoostVerbosity>Level2</BoostVerbosity>
-  </PropertyGroup>
-  <PropertyGroup Label="cxxflags" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <cxxPreprocessKeepComments>true</cxxPreprocessKeepComments>
+    <BoostVerbosity>
+    </BoostVerbosity>
   </PropertyGroup>
   <Import Condition="'$(VisualStudioVersion)'=='12.0'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="ConfGen.targets" />
     <Import Project="boost.targets" />
   </ImportGroup>
 </Project>

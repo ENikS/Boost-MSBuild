@@ -142,5 +142,9 @@
   <BoolProperty Name="cxxUseFullPaths" DisplayName="Use Full Paths" Description="Use full paths in diagnostic messages.     (/FC)" Category="Advanced" Switch="FC" F1Keyword="VC.Project.VCCLCompilerTool.UseFullPaths"></BoolProperty>
   <BoolProperty Name="cxxOmitDefaultLibName" DisplayName="Omit Default Library Name" Description="Do not include default library names in .obj files.     (/Zl)" Category="Advanced" Switch="Zl" F1Keyword="VC.Project.VCCLCompilerTool.OmitDefaultLibName"></BoolProperty>
   <StringListProperty Name="cxxTreatSpecificWarningsAsErrors" DisplayName="Treat Specific Warnings As Errors" Description="Treats the specific compiler warning as an error where n is a compiler warning." Category="Advanced" Switch="we" F1Keyword="VC.Project.VCCLCompilerTool.TreatSpecificWarningsAsErrors"></StringListProperty>
-  <StringProperty Name="cxxAdditionalOptions" DisplayName="Additional Options" Description="Additional Options." SwitchPrefix="--" Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage"></StringProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Ignored Additional Options" Description="Additional Options Are Ignored for CXXFLAGS." Category="Command Line" IncludeInCommandLine="false" >
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="cxxflags" ItemType="flags"  />
+    </StringProperty.DataSource>
+  </StringProperty>
 </Rule>

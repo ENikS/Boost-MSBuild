@@ -131,15 +131,13 @@
       <EnumValue Name="Level13" Switch="-d+13" DisplayName="Changes in target status (fate)" ></EnumValue>
     </EnumProperty>
     <BoolProperty Name="StopOnError" DisplayName="Stop on first error" Description="Stop at first error" Category="ProjectDefaults" Switch="-q"></BoolProperty>
-    <BoolProperty Name="ConfigChecks" DisplayName="Rerun Checks" Description="Always Rerun Configuration Checks" Category="ProjectDefaults" Switch="--reconfigure"></BoolProperty>
+    <BoolProperty Name="ConfigChecks" DisplayName="Rerun Configuration Checks" Description="Always Rerun Configuration Checks" Category="ProjectDefaults" Switch="--reconfigure"></BoolProperty>
     <EnumProperty Name="BoostDebug" DisplayName="Debug Options"
                   Description="Specifies various debug options" Category="ProjectDefaults" >
       <EnumValue Name="configuration" Switch="--debug-configuration" DisplayName="Debug Configuration" Description="Diagnose configuration." ></EnumValue>
       <EnumValue Name="building" Switch="--debug-building" DisplayName="Debug Building" Description="Report which targets are built with what properties." ></EnumValue>
       <EnumValue Name="generator" Switch="--debug-generator"   DisplayName="Debug Generator" Description="Diagnose generator search/execution."></EnumValue>
     </EnumProperty>
-
-
 
     <!--Libraries-->
     <BoolProperty Switch="--with-atomic" ReverseSwitch="--without-atomic" Name="atomic_library" DisplayName="atomic" Description="Build, stage, or install 'atomic' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/1_57_0/doc/html/atomic.html"/>

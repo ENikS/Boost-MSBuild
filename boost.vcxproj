@@ -22,7 +22,6 @@
     <ProjectGuid>{9cd23c68-ba74-4c50-924f-2a609c25b7a0}</ProjectGuid>
     <Keyword>MakeProj</Keyword>
     <ConfigurationType>Makefile</ConfigurationType>
-    <ProjectName>boost</ProjectName>
     <BoostDir>$(BOOST_ROOT)</BoostDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -64,6 +63,9 @@
     <zlib-source>..\bitcoin-dev-master\dependencies\zlib</zlib-source>
     <BoostVerbosity>
     </BoostVerbosity>
+  </PropertyGroup>
+  <PropertyGroup Label="cxxflags" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <cxxTreatWarningAsError>true</cxxTreatWarningAsError>
   </PropertyGroup>
   <Import Condition="'$(VisualStudioVersion)'=='12.0'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

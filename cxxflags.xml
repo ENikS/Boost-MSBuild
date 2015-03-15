@@ -144,7 +144,7 @@
   <StringListProperty Name="cxxTreatSpecificWarningsAsErrors" DisplayName="Treat Specific Warnings As Errors" Description="Treats the specific compiler warning as an error where n is a compiler warning." Category="Advanced" Switch="we" F1Keyword="VC.Project.VCCLCompilerTool.TreatSpecificWarningsAsErrors"></StringListProperty>
   <StringProperty Name="AdditionalOptions" DisplayName="Ignored Additional Options" Description="Additional Options Are Ignored for CXXFLAGS." Category="Command Line" IncludeInCommandLine="false" >
     <StringProperty.DataSource>
-      <DataSource Persistence="ProjectFile" Label="cxxflags" ItemType="flags"  />
+      <DataSource Persistence="ProjectFile" Label="cxxflags" ItemType="cxxflags"  />
     </StringProperty.DataSource>
   </StringProperty>
 </Rule>

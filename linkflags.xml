@@ -228,7 +228,7 @@
   <BoolProperty Name="LinkBuildingInIde" Visible="false"></BoolProperty>
   <StringProperty Name="AdditionalOptions" DisplayName="Ignored Additional Options" Description="Additional Options Are Ignored for LINKFLAGS." Category="Command Line" IncludeInCommandLine="false" >
     <StringProperty.DataSource>
-      <DataSource Persistence="ProjectFile" Label="linkflags" ItemType="flags" HasConfigurationCondition="true" />
+      <DataSource Persistence="ProjectFile" Label="linkflags" ItemType="linkflags" HasConfigurationCondition="true" />
     </StringProperty.DataSource>
   </StringProperty>
 </Rule>

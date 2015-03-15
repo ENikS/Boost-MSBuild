@@ -68,9 +68,8 @@ Copyright Eugene Sadovoi (C)
     </XmlPeek>
 
     <XmlPeek Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/build/2009/properties'/&gt;"
-             XmlInputPath="$(PropertyPageSchema)"
-             Query="/ns:Rule$(NameFilter)/*[$(IncludedFilter)$(PathFilter)]/@Name|
-       /ns:ProjectSchemaDefinitions/ns:Rule$(NameFilter)/*[$(IncludedFilter)$(PathFilter)]/@Name">
+             XmlInputPath="$(PropertyPageSchema)" Query="/ns:Rule$(NameFilter)/*[$(IncludedFilter)$(PathFilter)]/@Name|
+                             /ns:ProjectSchemaDefinitions/ns:Rule$(NameFilter)/*[$(IncludedFilter)$(PathFilter)]/@Name">
       <Output TaskParameter="Result" ItemName="Paths" />
     </XmlPeek>
 

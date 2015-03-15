@@ -22,7 +22,7 @@
     <ProjectGuid>{9cd23c68-ba74-4c50-924f-2a609c25b7a0}</ProjectGuid>
     <Keyword>MakeProj</Keyword>
     <ConfigurationType>Makefile</ConfigurationType>
-    <BoostDir>$(BOOST_ROOT)</BoostDir>
+    <BoostDir>$(BOOST_BUILD_PATH)</BoostDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

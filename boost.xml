@@ -41,6 +41,7 @@
                          Category="General" />
     <StringProperty Name="BoostDir" DisplayName="Boost Root Directory" IncludeInCommandLine="false"
                     Description="Specifies Boost Root Directory."
+                    HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.configuration"
                     ReadOnly="false"
                     Category="General"
                     Subtype="folder" />
@@ -65,23 +66,27 @@
       <DataSource Persistence="ProjectFile" Label="Boost" />
     </Rule.DataSource>
 
-    <EnumProperty Name="boost-link" DisplayName="Configuration Type"
+    <EnumProperty Name="boost-link" DisplayName="Configuration Type" 
                   Description="Whether to build static or shared libraries."
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.properties"
                   Category="ProjectDefaults">
       <EnumValue Name="shared" Switch="link=shared" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" ></EnumValue>
       <EnumValue Name="static" Switch="link=static" DisplayName="Static library" Description="Static Library (.lib)" ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="boost-runtime-link" DisplayName="Link To Runtime Library" 
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.properties"
                   Description="Specify runtime library for linking." Category="ProjectDefaults">
       <EnumValue Name="shared" Switch="runtime-link=shared" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" ></EnumValue>
       <EnumValue Name="static" Switch="runtime-link=static" DisplayName="Static Libraries " Description="Link to static libraries (.lib)" ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="boost-threading" DisplayName="Threading"
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.properties"
                   Description="Whether to build single or multithreaded binaries." Category="ProjectDefaults">
       <EnumValue Name="single" Switch="threading=single" DisplayName="Single Threaded" Description="Builds Single Threaded binaries" ></EnumValue>
       <EnumValue Name="multi" Switch="threading=multi" DisplayName="Multi Threaded" Description="Builds Multi Threaded binaries" ></EnumValue>
     </EnumProperty>
     <EnumProperty Name="boost-build-type" DisplayName="Build Type"
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.properties"
                   Description="Build the specified pre-defined set of variations of the libraries." Category="ProjectDefaults">
       <EnumValue Name="minimal" Switch="--build-type=minimal" DisplayName="Minimal Build" Description="Builds a minimal set of variants." ></EnumValue>
       <EnumValue Name="complete" Switch="--build-type=complete" DisplayName="Complete Build" Description="Build all possible variations." ></EnumValue>
@@ -93,16 +98,8 @@
       <EnumValue Name="tagged" Switch="--layout=tagged" DisplayName="Tagged Layout" Description="Names of boost binaries include the encoded build properties such as variant and threading, but do not including compiler name and version, or Boost version." ></EnumValue>
       <EnumValue Name="system" Switch="--layout=system" DisplayName="System Layout" Description="Binaries names do not include the Boost version number or the name and version number of the compiler." ></EnumValue>
     </EnumProperty>
-    <EnumProperty Name="CharacterSet" DisplayName="Character Set" Visible="false" IncludeInCommandLine="false"
-                  Description="Tells the compiler to use the specified character set; aids in localization issues."
-                  Category="ProjectDefaults" 
-                  F1Keyword="VC.Project.VCConfiguration.CharacterSet">
-      <EnumValue Name="NotSet" DisplayName="Not Set" Description="Not Set" ></EnumValue>
-      <EnumValue Name="Unicode" DisplayName="Use Unicode Character Set" Description="Use Unicode Character Set" ></EnumValue>
-      <EnumValue Name="MultiByte" DisplayName="Use Multi-Byte Character Set" Description="Use Multi-Byte Character Set" ></EnumValue>
-    </EnumProperty>
-    
-    <EnumProperty Name="boost-windows-api" DisplayName="Windows Runtime support" 
+    <EnumProperty Name="boost-windows-api" DisplayName="Windows Runtime support"
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/reference.html#bbv2.reference.tools.compiler.msvc"
                   Description="Specify which Windows API set to target." Category="ProjectDefaults" >
       <EnumValue Name="desktop" Switch="windows-api=desktop" DisplayName="Windows Desktop" Description="Regular Windows binaries" ></EnumValue>
       <EnumValue Name="store"   Switch="windows-api=store"   DisplayName="Windows Store" Description="Binaries for Windows Store" ></EnumValue>
@@ -114,6 +111,7 @@
       <EnumValue Name="Install" Switch="install"   DisplayName="Install Boost" Description="Build and install only compiled library files to the output directory."></EnumValue>
     </EnumProperty>
     <EnumProperty Name="BoostVerbosity" DisplayName="Output Verbosity"
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.options"
                   Description="Specifies how much information displayed during build." Category="ProjectDefaults" >
       <EnumValue Name="Level0" Switch="-d0"    DisplayName="Turn off all diagnostic output" ></EnumValue>
       <EnumValue Name="Level1" Switch="-d+1"   DisplayName="Show the actions taken for building targets" ></EnumValue>
@@ -130,9 +128,14 @@
       <EnumValue Name="Level12" Switch="-d+12" DisplayName="Show graph for target dependencies" ></EnumValue>
       <EnumValue Name="Level13" Switch="-d+13" DisplayName="Changes in target status (fate)" ></EnumValue>
     </EnumProperty>
-    <BoolProperty Name="StopOnError" DisplayName="Stop on first error" Description="Stop at first error" Category="ProjectDefaults" Switch="-q"></BoolProperty>
-    <BoolProperty Name="ConfigChecks" DisplayName="Rerun Configuration Checks" Description="Always Rerun Configuration Checks" Category="ProjectDefaults" Switch="--reconfigure"></BoolProperty>
+    <BoolProperty Name="StopOnError" DisplayName="Stop on first error" 
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.options"
+                  Description="Stop at first error" Category="ProjectDefaults" Switch="-q"></BoolProperty>
+    <BoolProperty Name="ConfigChecks" DisplayName="Rerun Configuration Checks" 
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.options"
+                  Description="Always Rerun Configuration Checks" Category="ProjectDefaults" Switch="--reconfigure"></BoolProperty>
     <EnumProperty Name="BoostDebug" DisplayName="Debug Options"
+                  HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.options"
                   Description="Specifies various debug options" Category="ProjectDefaults" >
       <EnumValue Name="configuration" Switch="--debug-configuration" DisplayName="Debug Configuration" Description="Diagnose configuration." ></EnumValue>
       <EnumValue Name="building" Switch="--debug-building" DisplayName="Debug Building" Description="Report which targets are built with what properties." ></EnumValue>
@@ -140,91 +143,90 @@
     </EnumProperty>
 
     <!--Libraries-->
-    <BoolProperty Switch="--with-atomic" ReverseSwitch="--without-atomic" Name="atomic_library" DisplayName="atomic" Description="Build, stage, or install 'atomic' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/1_57_0/doc/html/atomic.html"/>
-    <BoolProperty Switch="--with-chrono" ReverseSwitch="--without-chrono" Name="chrono_library" DisplayName="chrono" Description="Build, stage, or install 'chrono' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-container" ReverseSwitch="--without-container" Name="container_library" DisplayName="container" Description="Build, stage, or install 'container' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-context" ReverseSwitch="--without-context" Name="context_library" DisplayName="context" Description="Build, stage, or install 'context' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-coroutine" ReverseSwitch="--without-coroutine" Name="coroutine_library" DisplayName="coroutine" Description="Build, stage, or install 'coroutine' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-date_time" ReverseSwitch="--without-date_time" Name="date_time_library" DisplayName="date_time" Description="Build, stage, or install 'date_time' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-exception" ReverseSwitch="--without-exception" Name="exception_library" DisplayName="exception" Description="Build, stage, or install 'exception' library." Category="Build" HelpUrl="" />
-    <BoolProperty Switch="--with-filesystem" ReverseSwitch="--without-filesystem" Name="filesystem_library" DisplayName="filesystem" Description="Build, stage, or install 'filesystem' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-graph" ReverseSwitch="--without-graph" Name="graph_library" DisplayName="graph" Description="Build, stage, or install 'graph' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-graph_parallel" ReverseSwitch="--without-graph_parallel" Name="graph_parallel_library" DisplayName="graph_parallel" Description="Build, stage, or install 'graph_parallel' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-iostreams" ReverseSwitch="--without-iostreams" Name="iostreams_library" DisplayName="iostreams" Description="Build, stage, or install 'iostreams' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-locale" ReverseSwitch="--without-locale" Name="locale_library" DisplayName="locale" Description="Build, stage, or install 'locale' library." Category="Build" HelpUrl="" />
-    <BoolProperty Switch="--with-log" ReverseSwitch="--without-log" Name="log_library" DisplayName="log" Description="Build, stage, or install 'log' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-math" ReverseSwitch="--without-math" Name="math_library" DisplayName="math" Description="Build, stage, or install 'math' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-mpi" ReverseSwitch="--without-mpi" Name="mpi_library" DisplayName="mpi" Description="Build, stage, or install 'mpi' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-program_options" ReverseSwitch="--without-program_options" Name="program_options_library" DisplayName="program_options" Description="Build, stage, or install 'program_options' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-python" ReverseSwitch="--without-python" Name="python_library" DisplayName="python" Description="Build, stage, or install 'python' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-random" ReverseSwitch="--without-random" Name="random_library" DisplayName="random" Description="Build, stage, or install 'random' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-regex" ReverseSwitch="--without-regex" Name="regex_library" DisplayName="regex" Description="Build, stage, or install 'regex' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-serialization" ReverseSwitch="--without-serialization" Name="serialization_library" DisplayName="serialization" Description="Build, stage, or install 'serialization' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-signals" ReverseSwitch="--without-signals" Name="signals_library" DisplayName="signals" Description="Build, stage, or install 'signals' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-system" ReverseSwitch="--without-system" Name="system_library" DisplayName="system" Description="Build, stage, or install 'system' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-test" ReverseSwitch="--without-test" Name="test_library" DisplayName="test" Description="Build, stage, or install 'test' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-thread" ReverseSwitch="--without-thread" Name="thread_library" DisplayName="thread" Description="Build, stage, or install 'thread' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-timer" ReverseSwitch="--without-timer" Name="timer_library" DisplayName="timer" Description="Build, stage, or install 'timer' library." Category="Build" HelpUrl=""/>
-    <BoolProperty Switch="--with-wave" ReverseSwitch="--without-wave" Name="wave_library" DisplayName="wave" Description="Build, stage, or install 'wave' library." Category="Build" HelpUrl=""/>
+    <BoolProperty Switch="--with-atomic" ReverseSwitch="--without-atomic" Name="atomic_library" DisplayName="atomic" Description="Build, stage, or install 'atomic' library." Category="Build"                HelpUrl="http://www.boost.org/doc/libs/master/doc/html/atomic.html"/>
+    <BoolProperty Switch="--with-chrono" ReverseSwitch="--without-chrono" Name="chrono_library" DisplayName="chrono" Description="Build, stage, or install 'chrono' library." Category="Build"                HelpUrl="http://www.boost.org/doc/libs/master/doc/html/chrono.html"/>
+    <BoolProperty Switch="--with-container" ReverseSwitch="--without-container" Name="container_library" DisplayName="container" Description="Build, stage, or install 'container' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/doc/html/container.html"/>
+    <BoolProperty Switch="--with-context" ReverseSwitch="--without-context" Name="context_library" DisplayName="context" Description="Build, stage, or install 'context' library." Category="Build"           HelpUrl="http://www.boost.org/doc/libs/master/libs/context/doc/html/index.html"/>
+    <BoolProperty Switch="--with-coroutine" ReverseSwitch="--without-coroutine" Name="coroutine_library" DisplayName="coroutine" Description="Build, stage, or install 'coroutine' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/libs/coroutine/doc/html/index.html"/>
+    <BoolProperty Switch="--with-date_time" ReverseSwitch="--without-date_time" Name="date_time_library" DisplayName="date_time" Description="Build, stage, or install 'date_time' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/doc/html/date_time.html"/>
+    <BoolProperty Switch="--with-exception" ReverseSwitch="--without-exception" Name="exception_library" DisplayName="exception" Description="Build, stage, or install 'exception' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/libs/exception/doc/exception.html" />
+    <BoolProperty Switch="--with-filesystem" ReverseSwitch="--without-filesystem" Name="filesystem_library" DisplayName="filesystem" Description="Build, stage, or install 'filesystem' library." Category="Build"  HelpUrl="http://www.boost.org/doc/libs/master/libs/filesystem/doc/reference.html"/>
+    <BoolProperty Switch="--with-graph" ReverseSwitch="--without-graph" Name="graph_library" DisplayName="graph" Description="Build, stage, or install 'graph' library." Category="Build"                           HelpUrl="http://www.boost.org/doc/libs/master/libs/graph/doc/Graph.html"/>
+    <BoolProperty Switch="--with-graph_parallel" ReverseSwitch="--without-graph_parallel" Name="graph_parallel_library" DisplayName="graph_parallel" Description="Build, stage, or install 'graph_parallel' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/libs/graph_parallel/doc/html/index.html"/>
+    <BoolProperty Switch="--with-iostreams" ReverseSwitch="--without-iostreams" Name="iostreams_library" DisplayName="iostreams" Description="Build, stage, or install 'iostreams' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/index.html"/>
+    <BoolProperty Switch="--with-locale" ReverseSwitch="--without-locale" Name="locale_library" DisplayName="locale" Description="Build, stage, or install 'locale' library." Category="Build"                HelpUrl="http://www.boost.org/doc/libs/master/libs/locale/doc/html/index.html" />
+    <BoolProperty Switch="--with-log" ReverseSwitch="--without-log" Name="log_library" DisplayName="log" Description="Build, stage, or install 'log' library." Category="Build"                               HelpUrl="http://www.boost.org/doc/libs/master/libs/log/doc/html/index.html"/>
+    <BoolProperty Switch="--with-math" ReverseSwitch="--without-math" Name="math_library" DisplayName="math" Description="Build, stage, or install 'math' library." Category="Build"                          HelpUrl="http://www.boost.org/doc/libs/master/libs/math/doc/html/index.html"/>
+    <BoolProperty Switch="--with-mpi" ReverseSwitch="--without-mpi" Name="mpi_library" DisplayName="mpi" Description="Build, stage, or install 'mpi' library." Category="Build"                               HelpUrl="http://www.boost.org/doc/libs/master/doc/html/mpi.html"/>
+    <BoolProperty Switch="--with-program_options" ReverseSwitch="--without-program_options" Name="program_options_library" DisplayName="program_options" Description="Build, stage, or install 'program_options' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/doc/html/program_options.html"/>
+    <BoolProperty Switch="--with-python" ReverseSwitch="--without-python" Name="python_library" DisplayName="python" Description="Build, stage, or install 'python' library." Category="Build"                HelpUrl="http://www.boost.org/doc/libs/master/libs/python/doc/index.html"/>
+    <BoolProperty Switch="--with-random" ReverseSwitch="--without-random" Name="random_library" DisplayName="random" Description="Build, stage, or install 'random' library." Category="Build"                HelpUrl="http://www.boost.org/doc/libs/master/doc/html/boost_random.html"/>
+    <BoolProperty Switch="--with-regex" ReverseSwitch="--without-regex" Name="regex_library" DisplayName="regex" Description="Build, stage, or install 'regex' library." Category="Build"                     HelpUrl="http://www.boost.org/doc/libs/master/libs/regex/doc/html/index.html"/>
+    <BoolProperty Switch="--with-serialization" ReverseSwitch="--without-serialization" Name="serialization_library" DisplayName="serialization" Description="Build, stage, or install 'serialization' library." Category="Build" HelpUrl="http://www.boost.org/doc/libs/master/libs/serialization/doc/index.html"/>
+    <BoolProperty Switch="--with-signals" ReverseSwitch="--without-signals" Name="signals_library" DisplayName="signals" Description="Build, stage, or install 'signals' library." Category="Build"           HelpUrl="http://www.boost.org/doc/libs/master/doc/html/signals.html"/>
+    <BoolProperty Switch="--with-system" ReverseSwitch="--without-system" Name="system_library" DisplayName="system" Description="Build, stage, or install 'system' library." Category="Build"                HelpUrl="http://www.boost.org/doc/libs/master/libs/system/doc/index.html"/>
+    <BoolProperty Switch="--with-test" ReverseSwitch="--without-test" Name="test_library" DisplayName="test" Description="Build, stage, or install 'test' library." Category="Build"                          HelpUrl="http://www.boost.org/doc/libs/master/libs/test/doc/html/index.html"/>
+    <BoolProperty Switch="--with-thread" ReverseSwitch="--without-thread" Name="thread_library" DisplayName="thread" Description="Build, stage, or install 'thread' library." Category="Build"                HelpUrl="http://www.boost.org/doc/libs/master/doc/html/thread.html"/>
+    <BoolProperty Switch="--with-timer" ReverseSwitch="--without-timer" Name="timer_library" DisplayName="timer" Description="Build, stage, or install 'timer' library." Category="Build"                     HelpUrl="http://www.boost.org/doc/libs/master/libs/timer/doc/index.html"/>
+    <BoolProperty Switch="--with-wave" ReverseSwitch="--without-wave" Name="wave_library" DisplayName="wave" Description="Build, stage, or install 'wave' library." Category="Build"                          HelpUrl="http://www.boost.org/doc/libs/master/libs/wave/index.html"/>
     <!--Command Line support-->
-    <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage" IncludeInCommandLine="false" />
-    <IntProperty Name="PlatformArchitecture" DisplayName="Platform Architecture" Description="Platform Architecture." Category="ProjectDefaults" Switch="address-model" Separator="=" Visible="false" ReadOnly="true" />
-    <EnumProperty Name="Configuration" DisplayName="Build Configuration"
+    <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" IncludeInCommandLine="false"
+                    HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.options"
+                    Description="Additional Options." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage" />
+    <IntProperty Name="PlatformArchitecture" DisplayName="Platform Architecture" Visible="false"
+                 Description="Platform Architecture." Category="ProjectDefaults" 
+                 Switch="address-model" Separator="=" ReadOnly="true" />
+    <EnumProperty Name="Configuration" DisplayName="Build Configuration" Visible="false" IncludeInCommandLine="true"
                   Description="Build Configuration." Category="Command Line"
-                  Visible="false" IncludeInCommandLine="true" ReadOnly="true">
+                  ReadOnly="true">
       <EnumValue Name="Release" Switch="variant=release" DisplayName="Release" Description="Release" ></EnumValue>
       <EnumValue Name="Debug" Switch="variant=debug"   DisplayName="Debug" Description="Debug" ></EnumValue>
     </EnumProperty>
     <!--Compression-->
     <BoolProperty ReverseSwitch="-sNO_COMPRESSION" Name="enable-compression" DisplayName="Enable Compression" Description="Enable support for compression filters." Category="Compression"
-                  HelpUrl="http://www.boost.org/doc/libs/1_57_0/libs/iostreams/doc/classes/bzip2.html#installation" ></BoolProperty>
+                  HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" ></BoolProperty>
     <BoolProperty ReverseSwitch="-sNO_BZIP2"       Name="enable-bzip2"       DisplayName="Enable BZip2"       Description="Enable support for BZip2 filters." Category="Compression"
-                  HelpUrl="" ></BoolProperty>
+                  HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" ></BoolProperty>
     <StringProperty Name="bzip2-binary" DisplayName="Name of the LIBBZ2 binary" Category="Compression"
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html"
                     Switch="-sBZIP2_BINARY" Separator="=" Default="libbz2"
                     Description="Name of the libbz2 binary, not including the file extension. If linking with a dynamic build of libbz2, specify the name of the import library."  ></StringProperty>
-
     <StringProperty Name="bzip2-include" DisplayName="LIBBZ2 Headers" Category="Compression" 
                     Switch="-sBZIP2_INCLUDE" Separator="=" Default="$(bzip2-source)"
                     Description="Path to the libbz2 headers, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
-                    HelpUrl="" />
-
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
     <StringProperty Name="bzip2-libpath" DisplayName="LIBBZ2 Binary" Category="Compression" 
                     Switch="-sBZIP2_LIBPATH" Separator="="
                     Description="Path to the libbz2 binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of libbz2, specify the path to the import library."
                     Subtype="folder"
-                    HelpUrl="" />
-
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
     <StringProperty Name="bzip2-source" DisplayName="LIBBZ2 Source" Category="Compression" 
                     Switch="-sBZIP2_SOURCE" Separator="="
                     Description="Path to the libbz2 source files, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
-                    HelpUrl="" />
-
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
     <BoolProperty ReverseSwitch="-sNO_ZZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression"  
-                  HelpUrl=""/>
+                  HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html"/>
     <StringProperty Name="zlib-binary" DisplayName="Name of the ZLIB binary" Category="Compression" 
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html"
                     Switch="-sZLIB_BINARY" Separator="=" Default="zdll"
                     Description="Name of the zlib binary, not including the file extension. If linking with a dynamic build of zlib, specify the name of the import library."  />
-
     <StringProperty Name="zlib-include" DisplayName="ZLIB Headers" Category="Compression" 
                     Switch="-sZLIB_INCLUDE" Separator="=" Default="$(zlib-source)"
                     Description="Path to the zlib headers, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
-                    HelpUrl="" />
-
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
     <StringProperty Name="zlib-libpath" DisplayName="ZLIB Binary" Category="Compression"
                     Switch="-sZLIB_LIBPATH" Separator="="
                     Description="Path to the zlib binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of zlib, specify the path to the import library."
                     Subtype="folder"
-                    HelpUrl="" />
-
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
     <StringProperty Name="zlib-source" DisplayName="ZLIB Source" Category="Compression" 
                     Switch="-sZLIB_SOURCE" Separator="="
                     Description="Path to the zlib source files, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
-                    HelpUrl="" />
+                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
   </Rule>
 </ProjectSchemaDefinitions>
 

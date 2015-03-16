@@ -32,7 +32,8 @@
     <context_library>
     </context_library>
     <IntDir>..\Temp dir</IntDir>
-    <OutDir>..\Temp</OutDir>
+    <OutDir>
+    </OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v120</PlatformToolset>
@@ -57,15 +58,20 @@
   </PropertyGroup>
   <PropertyGroup Label="Boost" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <python_library>false</python_library>
-    <boost-build-type>minimal</boost-build-type>
-    <boost-layout>system</boost-layout>
+    <boost-layout>
+    </boost-layout>
     <BoostDeployment>Stage</BoostDeployment>
-    <zlib-source>..\bitcoin-dev-master\dependencies\zlib</zlib-source>
-    <BoostVerbosity>
-    </BoostVerbosity>
+    <zlib-source>..\..\bitcoin-dev-master\dependencies\zlib</zlib-source>
+    <enable-compression>false</enable-compression>
+    <enable-zlib>false</enable-zlib>
+    <enable-bzip2>false</enable-bzip2>
+    <boost-build-type>minimal</boost-build-type>
+    <boost-runtime-link>static</boost-runtime-link>
+    <boost-threading>multi</boost-threading>
   </PropertyGroup>
   <PropertyGroup Label="cxxflags" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <cxxTreatWarningAsError>true</cxxTreatWarningAsError>
+    <cxxTreatWarningAsError>
+    </cxxTreatWarningAsError>
   </PropertyGroup>
   <Import Condition="'$(VisualStudioVersion)'=='12.0'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -43,6 +43,8 @@ Copyright Eugene Sadovoi (C)
   <ItemGroup Label="Engine source files">
     <EngineSourceFiles Include="$(BoostRoot)\tools\build\src\engine\*.h" />
     <EngineSourceFiles Include="$(BoostRoot)\tools\build\src\engine\*.c" />
+    <BoostInputs       Include="$(MSBuildProjectFullPath)" />
+    <BoostOutputs      Include="$(OutputDir)\lib\*" />
   </ItemGroup>
 
 
@@ -377,8 +379,8 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // BUILD TARGET
   /////////////////////////////////////////////////////////// -->
-  <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;" >
-    <Message Text="Building..." Importance="normal" />
+  <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;" 
+          Inputs="@(BoostInputs)" Outputs="@(BoostOutputs)" >
     <Exec Command="b2.exe @(boost-options, ' ')"       WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
 
@@ -388,8 +390,7 @@ Copyright Eugene Sadovoi (C)
   // REBUILD TARGET
   /////////////////////////////////////////////////////////// -->
   <Target Name="Rebuild" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;">
-    <Message Text="Rebuilding..." Importance="normal" />
-    <Exec Command="b2.exe @(boost-options, ' ') -a"    WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="VS_UNICODE_OUTPUT=" />
+    <CallTarget Targets="Clean;Build" />
   </Target>
 
 
@@ -398,9 +399,21 @@ Copyright Eugene Sadovoi (C)
     // CLEAN TARGET
     /////////////////////////////////////////////////////////// -->
   <Target Name="Clean" >
-    <Message Text="Cleaning..." Importance="normal" />
     <RemoveDir Directories="@(BoostFolders)"   ContinueOnError="true"  />
   </Target>
 
- 
+
+  <!--
+    ///////////////////////////////////////////////////////////
+    // Move Staged libs to OutDir
+    /////////////////////////////////////////////////////////// -->
+  <Target Name="UpdateOutputs" AfterTargets="Build;Rebuild;" >
+    
+    <ItemGroup>
+      <BoostOutputs Remove="@(BoostOutputs)"/>
+      <BoostOutputs Include="$(OutputDir)\lib\*" />
+    </ItemGroup>
+    <Touch Files="@(BoostOutputs)" />
+  </Target>
+
 </Project>

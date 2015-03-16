@@ -32,8 +32,15 @@
     <StringProperty Name="BuildLogFile" DisplayName="Build Log File" IncludeInCommandLine="false"
                     Description="Specifies the build log file to write to when build logging is enabled."
                     F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
-                    Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
-                    Subtype="file" />
+                    Category="General" Default="$(IndDir)$(MSBuildProjectName).log"
+                    Subtype="file" >
+      <StringProperty.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path" />
+      </StringProperty.DataSource>
+    </StringProperty>
+    <BoolProperty Name="RebuildOnChanges" DisplayName="Skip Rebuild Check"  IncludeInCommandLine="false"
+                  Description="Skip check for Boost source files changes. Only buld if Project settings are changed. Disable if working on Boost libraries source." 
+                  Category="General"></BoolProperty>
     <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets" IncludeInCommandLine="false"
                          Switch="toolset=msvc" Separator="-"
                          Description="Specifies the toolset used for building the current configuration; If not set, the default toolset is used"
@@ -45,20 +52,6 @@
                     ReadOnly="false"
                     Category="General"
                     Subtype="folder" />
-    <BoolProperty Name="RebuildOnChanges" DisplayName="Skip Rebuild Check"  IncludeInCommandLine="false"
-                  Description="Skip check for Boost source files changes. Only buld if Project settings are changed. Disable if working on Boost libraries source." 
-                  Category="General"></BoolProperty>
-
-    <StringProperty Name="BuildLogFile" DisplayName="Build Log File"
-                    Description="Specifies the build log file to write to when build logging is enabled."
-                    F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
-                    Category="General" Default="$(IndDir)$(MSBuildProjectName).log"
-                    Subtype="file"
-                    Visible="false">
-      <StringProperty.DataSource>
-        <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path" />
-      </StringProperty.DataSource>
-    </StringProperty>
   </Rule>
   
   <Rule Name="boost"

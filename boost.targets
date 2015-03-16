@@ -53,8 +53,12 @@ Copyright Eugene Sadovoi (C)
   // Check for abnormal confitions before build
   ///////////////////////////////////////////////////////////-->
   <Target Name="SanityCheck" BeforeTargets="Build;Rebuild" >
-    <Error Code="MSB8004" Condition="!HasTrailingSlash('$(IntDir)')" Text="Intermediate Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Intermediate Directory." />
-    <Error Code="MSB8004" Condition="!HasTrailingSlash('$(OutDir)')" Text="Output Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Output Directory." />
+    <Error Code="MSB8004" Condition="!HasTrailingSlash('$(IntDir)')" 
+           Text="Intermediate Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Intermediate Directory." />
+    <Error Code="MSB8004" Condition="!HasTrailingSlash('$(OutDir)')" 
+           Text="Output Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Output Directory." />
+    <Error                Condition="'$(BoostRoot)'=='' or !Exists('$(BoostRoot)\Jamroot')" 
+                          Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" />
   </Target>
 
 
@@ -335,9 +339,6 @@ Copyright Eugene Sadovoi (C)
   // Prepare command line options for build command
   ///////////////////////////////////////////////////////////-->
   <Target Name="PrepareForBoostBuild" Returns="@(boost-options)" >
-    <Error Condition="'$(BoostRoot)'==''"              Text="Boost Library not found."                                               ContinueOnError="false" />
-    <Error Condition="!Exists('$(BoostRoot)\Jamroot')" Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" ContinueOnError="false" />
-
     <ItemGroup Label="Build Settings">
       <boost-options Condition="'$(PlatformToolset)'  ==''" Include="toolset=msvc" />
       <boost-options Condition="'$(PlatformToolset)'  !=''" Include="$([System.String]::Format('toolset=msvc-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))" />

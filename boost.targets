@@ -29,6 +29,7 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////-->
   <PropertyGroup>
     <BoostRoot Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+    <BoostRoot Condition="'$(BoostRoot)'==''">$(BOOST_BUILD_PATH)</BoostRoot>
     <OutputDir>$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</OutputDir>
     <BuildDir>$([System.IO.Path]::GetFullPath("$(IntDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BuildDir>
     <DummyFile Condition="'$(RebuildOnChanges)'=='false'">Dummy</DummyFile>
@@ -390,7 +391,7 @@ Copyright Eugene Sadovoi (C)
   /////////////////////////////////////////////////////////// -->
   <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;" 
           Inputs="$(MSBuildProjectFullPath);" Outputs="@(BoostOutputs);$(DummyFile)" >
-    <Exec Command="b2.exe @(boost-options, ' ')"       WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="VS_UNICODE_OUTPUT=" />
+    <Exec Command="b2.exe @(boost-options, ' ')"  WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
   
 
@@ -414,7 +415,7 @@ Copyright Eugene Sadovoi (C)
 
   <!--
     ///////////////////////////////////////////////////////////
-    // Move Staged libs to OutDir
+    // Update Outputs
     /////////////////////////////////////////////////////////// -->
   <Target Name="UpdateOutputs" AfterTargets="Build;Rebuild;" >
     
@@ -425,4 +426,14 @@ Copyright Eugene Sadovoi (C)
     <Touch Files="@(BoostOutputs)" />
   </Target>
 
+
+  <!--
+    ///////////////////////////////////////////////////////////
+    // Integration with Visual Studio reference system
+    /////////////////////////////////////////////////////////// -->
+  <Target Name="GetTargetPath" />
+  <Target Name="GetNativeManifest" />
+  <Target Name="GetResolvedLinkLibs" />
+  <Target Name="GetCopyToOutputDirectoryItems" />
+  
 </Project>

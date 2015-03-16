@@ -45,7 +45,16 @@
                     ReadOnly="false"
                     Category="General"
                     Subtype="folder" />
-
+    <StringProperty Name="BuildLogFile" DisplayName="Build Log File"
+                    Description="Specifies the build log file to write to when build logging is enabled."
+                    F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
+                    Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
+                    Subtype="file"
+                    Visible="false">
+      <StringProperty.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path" />
+      </StringProperty.DataSource>
+    </StringProperty>
   </Rule>
   
   <Rule Name="boost"
@@ -206,7 +215,7 @@
                     Description="Path to the libbz2 source files, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
-    <BoolProperty ReverseSwitch="-sNO_ZZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression"  
+    <BoolProperty ReverseSwitch="-sNO_ZLIB"       Name="enable-zlib"        DisplayName="Enable ZLib"        Description="Enable support for Zlib filters." Category="Compression"  
                   HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html"/>
     <StringProperty Name="zlib-binary" DisplayName="Name of the ZLIB binary" Category="Compression" 
                     HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html"

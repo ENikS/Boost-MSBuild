@@ -31,9 +31,11 @@
     <boost-link>static</boost-link>
     <context_library>
     </context_library>
-    <IntDir>..\Temp dir</IntDir>
+    <IntDir>..\Temp dir\</IntDir>
     <OutDir>
     </OutDir>
+    <RebuildOnChanges>
+    </RebuildOnChanges>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v120</PlatformToolset>

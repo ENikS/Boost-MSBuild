@@ -31,6 +31,7 @@ Copyright Eugene Sadovoi (C)
     <BoostRoot Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
     <OutputDir>$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</OutputDir>
     <BuildDir>$([System.IO.Path]::GetFullPath("$(IntDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BuildDir>
+    <DummyFile Condition="'$(RebuildOnChanges)'=='false'">Dummy</DummyFile>
   </PropertyGroup>
 
   <ItemGroup Label="Dirs to clear">
@@ -43,9 +44,17 @@ Copyright Eugene Sadovoi (C)
   <ItemGroup Label="Engine source files">
     <EngineSourceFiles Include="$(BoostRoot)\tools\build\src\engine\*.h" />
     <EngineSourceFiles Include="$(BoostRoot)\tools\build\src\engine\*.c" />
-    <BoostInputs       Include="$(MSBuildProjectFullPath)" />
     <BoostOutputs      Include="$(OutputDir)\lib\*" />
   </ItemGroup>
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Check for abnormal confitions before build
+  ///////////////////////////////////////////////////////////-->
+  <Target Name="SanityCheck" BeforeTargets="Build;Rebuild" >
+    <Error Code="MSB8004" Condition="!HasTrailingSlash('$(IntDir)')" Text="Intermediate Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Intermediate Directory." />
+    <Error Code="MSB8004" Condition="!HasTrailingSlash('$(OutDir)')" Text="Output Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Output Directory." />
+  </Target>
 
 
   <!--
@@ -319,7 +328,7 @@ Copyright Eugene Sadovoi (C)
     <Delete Condition="'@(temp-data)'!=''" Files="$(TempFile)" />
   </Target>
 
-   
+  
   <!--
   ///////////////////////////////////////////////////////////
   // Prepare command line options for build command
@@ -380,10 +389,10 @@ Copyright Eugene Sadovoi (C)
   // BUILD TARGET
   /////////////////////////////////////////////////////////// -->
   <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;" 
-          Inputs="@(BoostInputs)" Outputs="@(BoostOutputs)" >
+          Inputs="$(MSBuildProjectFullPath);" Outputs="@(BoostOutputs);$(DummyFile)" >
     <Exec Command="b2.exe @(boost-options, ' ')"       WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="VS_UNICODE_OUTPUT=" />
   </Target>
-
+  
 
   <!--
   ///////////////////////////////////////////////////////////

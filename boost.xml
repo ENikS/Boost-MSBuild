@@ -45,10 +45,14 @@
                     ReadOnly="false"
                     Category="General"
                     Subtype="folder" />
+    <BoolProperty Name="RebuildOnChanges" DisplayName="Skip Rebuild Check"  IncludeInCommandLine="false"
+                  Description="Skip check for Boost source files changes. Only buld if Project settings are changed. Disable if working on Boost libraries source." 
+                  Category="General"></BoolProperty>
+
     <StringProperty Name="BuildLogFile" DisplayName="Build Log File"
                     Description="Specifies the build log file to write to when build logging is enabled."
                     F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
-                    Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
+                    Category="General" Default="$(IndDir)$(MSBuildProjectName).log"
                     Subtype="file"
                     Visible="false">
       <StringProperty.DataSource>

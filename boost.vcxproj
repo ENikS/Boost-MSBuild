@@ -48,10 +48,8 @@
   <PropertyGroup Label="Boost" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <python_library>false</python_library>
     <BoostDeployment>Stage</BoostDeployment>
-    <enable-compression>
-    </enable-compression>
-    <enable-zlib>
-    </enable-zlib>
+    <enable-compression>false</enable-compression>
+    <enable-zlib>false</enable-zlib>
     <enable-bzip2>false</enable-bzip2>
     <boost-build-type>
     </boost-build-type>
@@ -59,9 +57,12 @@
     <boost-threading>multi</boost-threading>
     <iostreams_library>false</iostreams_library>
     <boost-link>DynamicLibrary</boost-link>
-    <zlib-source>..\zlib</zlib-source>
+    <zlib-source>
+    </zlib-source>
     <zlib-libpath>
     </zlib-libpath>
+    <ConfigChecks>
+    </ConfigChecks>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

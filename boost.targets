@@ -22,7 +22,7 @@ Copyright Eugene Sadovoi (C)
     <PropertyPageSchema Include="$(ProjectDir)linkflags.xml" />
     <BoostOutputs       Include="$(OutputDir)\lib\*" />
     <BoostOutputs       Include="'Dummy'"  Condition="'@(BoostOutputs)'==''">
-      <Delete>true</Delete>
+      <ToDelete>true</ToDelete>
     </BoostOutputs>
   </ItemGroup>
 
@@ -396,11 +396,14 @@ Copyright Eugene Sadovoi (C)
   <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;" 
           Inputs="$(MSBuildProjectFullPath);" Outputs="@(BoostOutputs);$(DummyFile)" 
           Returns="@(BoostOutputs)" >
-    
-    <Exec Command="b2.exe @(boost-options, ' ')"  WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="NO_ZLIB=1;VS_UNICODE_OUTPUT=" />
+    <Exec Command="b2.exe @(boost-options, ' ')"  WorkingDirectory="$(BoostRoot)\"  
+          EnvironmentVariables="VS_UNICODE_OUTPUT=" />
+
     <ItemGroup>
+      <BoostOutputs Remove="%(BoostOutputs.Identity)" Condition="'%(BoostOutputs.ToDelete)'=='true'" />
       <BoostOutputs Include="$(OutputDir)\lib\*" />
     </ItemGroup>
+    
     <Touch Files="@(BoostOutputs)" />
   </Target>
   
@@ -437,11 +440,7 @@ Copyright Eugene Sadovoi (C)
   <Target Name="GetTargetPath" Returns="@(_TargetPath)" >
     <ItemGroup>
       <_TargetPath Include="$(BoostRoot)\Jamroot">
-        <!--<ProjectType>StaticLibrary</ProjectType>
-        <ProjectType Condition="'$(boost-link)'!=''">$(boost-link)</ProjectType>-->
-        <Description>Boost Library</Description>
-        <Name>Boost</Name>
-        <Private>Never</Private>
+        <Private>true</Private>
         <FileType>info</FileType>
         <ResolveableAssembly>false</ResolveableAssembly>
       </_TargetPath>
@@ -465,9 +464,12 @@ Copyright Eugene Sadovoi (C)
       </LibFullPath>
     </ItemGroup>
   </Target>
-  
 
-  
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Returns list of DLLs to copy to output dir of parent app.
+  /////////////////////////////////////////////////////////// -->
   <Target Name="GetCopyToOutputDirectoryItems" Returns="@(DLLToCopy)" >
     <ItemGroup>
       <DLLs Include="$(OutputDir)\lib\*.dll" />
@@ -476,7 +478,6 @@ Copyright Eugene Sadovoi (C)
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </DLLToCopy>
     </ItemGroup>
-    <!--<Message Text="DLLToCopy: %(DLLToCopy.Identity) - %(DLLToCopy.TargetPath)" Importance="high" />-->
   </Target>
 
   

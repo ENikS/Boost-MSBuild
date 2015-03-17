@@ -29,7 +29,7 @@
                     Category="General" Default="$(Configuration)\"
                     Subtype="folder"
                     F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory" />
-    <StringProperty Name="BuildLogFile" DisplayName="Build Log File" IncludeInCommandLine="false"
+    <StringProperty Name="BuildLogFile" DisplayName="Build Log File" IncludeInCommandLine="false" Visible="false"
                     Description="Specifies the build log file to write to when build logging is enabled."
                     F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
                     Category="General" Default="$(IndDir)$(MSBuildProjectName).log"
@@ -72,14 +72,14 @@
       <DataSource Persistence="ProjectFile" Label="Boost" />
     </Rule.DataSource>
 
-    <EnumProperty Name="boost-link" DisplayName="Configuration Type" 
+    <EnumProperty Name="boost-link" DisplayName="Link Type" 
                   Description="Whether to build static or shared libraries."
                   HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.properties"
                   Category="ProjectDefaults">
-      <EnumValue Name="shared" Switch="link=shared" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" ></EnumValue>
-      <EnumValue Name="static" Switch="link=static" DisplayName="Static library" Description="Static Library (.lib)" ></EnumValue>
+      <EnumValue Name="DynamicLibrary" Switch="link=shared" DisplayName="Dynamic Library" Description="Dynamic Library (.dll)" ></EnumValue>
+      <EnumValue Name="StaticLibrary" Switch="link=static" DisplayName="Static library" Description="Static Library (.lib)" ></EnumValue>
     </EnumProperty>
-    <EnumProperty Name="boost-runtime-link" DisplayName="Link To Runtime Library" 
+    <EnumProperty Name="boost-runtime-link" DisplayName="Link At Runtime" 
                   HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.invocation.properties"
                   Description="Specify runtime library for linking." Category="ProjectDefaults">
       <EnumValue Name="shared" Switch="runtime-link=shared" DisplayName="Shared Libraries " Description="Link to dynamic libraries (.dll)" ></EnumValue>

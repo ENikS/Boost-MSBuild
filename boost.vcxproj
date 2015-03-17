@@ -23,59 +23,47 @@
     <Keyword>MakeProj</Keyword>
     <ConfigurationType>Makefile</ConfigurationType>
     <BoostDir>$(BOOST_BUILD_PATH)</BoostDir>
+    <UseDefaultProjectTools Label="Import Settings">false</UseDefaultProjectTools>
+    <UseDefaultPropertyPageSchemas Label="Import Settings">false</UseDefaultPropertyPageSchemas>
+    <UseDefaultGeneralPropertyPageSchema Label="Import Settings">false</UseDefaultGeneralPropertyPageSchema>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PlatformToolset>v120</PlatformToolset>
-    <stage_library>true</stage_library>
-    <boost-link>static</boost-link>
-    <context_library>
-    </context_library>
-    <IntDir>..\Temp dir\</IntDir>
-    <OutDir>
-    </OutDir>
-    <RebuildOnChanges>
-    </RebuildOnChanges>
+    <IntDir>..\..\Temp dir</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v120</PlatformToolset>
-    <stage_library>true</stage_library>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformToolset>v120</PlatformToolset>
-    <stage_library>true</stage_library>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PlatformToolset>v120</PlatformToolset>
-    <stage_library>true</stage_library>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(VisualStudioVersion)'=='12.0'" Label="Import Settings">
-    <UseDefaultProjectTools>false</UseDefaultProjectTools>
-    <UseDefaultPropertyPageSchemas>false</UseDefaultPropertyPageSchemas>
-    <UseDefaultGeneralPropertyPageSchema>false</UseDefaultGeneralPropertyPageSchema>
-  </PropertyGroup>
   <PropertyGroup Label="Boost" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <python_library>false</python_library>
-    <boost-layout>
-    </boost-layout>
     <BoostDeployment>Stage</BoostDeployment>
-    <zlib-source>..\..\bitcoin-dev-master\dependencies\zlib</zlib-source>
-    <enable-compression>false</enable-compression>
-    <enable-zlib>false</enable-zlib>
+    <enable-compression>
+    </enable-compression>
+    <enable-zlib>
+    </enable-zlib>
     <enable-bzip2>false</enable-bzip2>
-    <boost-build-type>minimal</boost-build-type>
-    <boost-runtime-link>static</boost-runtime-link>
+    <boost-build-type>
+    </boost-build-type>
+    <boost-runtime-link>shared</boost-runtime-link>
     <boost-threading>multi</boost-threading>
+    <iostreams_library>false</iostreams_library>
+    <boost-link>DynamicLibrary</boost-link>
+    <zlib-source>..\zlib</zlib-source>
+    <zlib-libpath>
+    </zlib-libpath>
   </PropertyGroup>
-  <PropertyGroup Label="cxxflags" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <cxxTreatWarningAsError>
-    </cxxTreatWarningAsError>
-  </PropertyGroup>
-  <Import Condition="'$(VisualStudioVersion)'=='12.0'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="boost.targets" />
   </ImportGroup>

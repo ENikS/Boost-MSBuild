@@ -20,6 +20,10 @@ Copyright Eugene Sadovoi (C)
     </PropertyPageSchema>
     <PropertyPageSchema Include="$(ProjectDir)cxxflags.xml" />
     <PropertyPageSchema Include="$(ProjectDir)linkflags.xml" />
+    <BoostOutputs       Include="$(OutputDir)\lib\*" />
+    <BoostOutputs       Include="'Dummy'"  Condition="'@(BoostOutputs)'==''">
+      <Delete>true</Delete>
+    </BoostOutputs>
   </ItemGroup>
 
   
@@ -29,7 +33,7 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////-->
   <PropertyGroup>
     <BoostRoot Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
-    <BoostRoot Condition="'$(BoostRoot)'==''">$(BOOST_BUILD_PATH)</BoostRoot>
+    <BoostRoot Condition="'$(BoostRoot)'==''">$([System.IO.Path]::GetFullPath("$(BOOST_BUILD_PATH)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
     <OutputDir>$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</OutputDir>
     <BuildDir>$([System.IO.Path]::GetFullPath("$(IntDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BuildDir>
     <DummyFile Condition="'$(RebuildOnChanges)'=='false'">Dummy</DummyFile>
@@ -45,7 +49,6 @@ Copyright Eugene Sadovoi (C)
   <ItemGroup Label="Engine source files">
     <EngineSourceFiles Include="$(BoostRoot)\tools\build\src\engine\*.h" />
     <EngineSourceFiles Include="$(BoostRoot)\tools\build\src\engine\*.c" />
-    <BoostOutputs      Include="$(OutputDir)\lib\*" />
   </ItemGroup>
 
   <!--
@@ -57,8 +60,8 @@ Copyright Eugene Sadovoi (C)
            Text="Intermediate Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Intermediate Directory." />
     <Error Code="MSB8004" Condition="!HasTrailingSlash('$(OutDir)')" 
            Text="Output Directory does not end with a trailing slash. Build requires trailing slash to allow proper evaluation of the Output Directory." />
-    <Error                Condition="'$(BoostRoot)'=='' or !Exists('$(BoostRoot)\Jamroot')" 
-                          Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" />
+    <Error Condition="'$(BoostRoot)'=='' or !Exists('$(BoostRoot)\Jamroot')" 
+           Text="Boost library is missing. Did you set BOOST_ROOT environment variable?" />
   </Target>
 
 
@@ -391,8 +394,14 @@ Copyright Eugene Sadovoi (C)
   // BUILD TARGET
   /////////////////////////////////////////////////////////// -->
   <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;" 
-          Inputs="$(MSBuildProjectFullPath);" Outputs="@(BoostOutputs);$(DummyFile)" >
-    <Exec Command="b2.exe @(boost-options, ' ')"  WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="VS_UNICODE_OUTPUT=" />
+          Inputs="$(MSBuildProjectFullPath);" Outputs="@(BoostOutputs);$(DummyFile)" 
+          Returns="@(BoostOutputs)" >
+    
+    <Exec Command="b2.exe @(boost-options, ' ')"  WorkingDirectory="$(BoostRoot)\"  EnvironmentVariables="NO_ZLIB=1;VS_UNICODE_OUTPUT=" />
+    <ItemGroup>
+      <BoostOutputs Include="$(OutputDir)\lib\*" />
+    </ItemGroup>
+    <Touch Files="@(BoostOutputs)" />
   </Target>
   
 
@@ -400,41 +409,76 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // REBUILD TARGET
   /////////////////////////////////////////////////////////// -->
-  <Target Name="Rebuild" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;">
-    <CallTarget Targets="Clean;Build" />
-  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build;" Returns="@(BoostOutputs)" />
 
 
   <!--
-    ///////////////////////////////////////////////////////////
-    // CLEAN TARGET
-    /////////////////////////////////////////////////////////// -->
+  ///////////////////////////////////////////////////////////
+  // CLEAN TARGET
+  /////////////////////////////////////////////////////////// -->
   <Target Name="Clean" >
     <RemoveDir Directories="@(BoostFolders)"   ContinueOnError="true"  />
   </Target>
 
 
   <!--
-    ///////////////////////////////////////////////////////////
-    // Update Outputs
-    /////////////////////////////////////////////////////////// -->
-  <Target Name="UpdateOutputs" AfterTargets="Build;Rebuild;" >
-    
+  ///////////////////////////////////////////////////////////
+  // Integration with Visual Studio
+  /////////////////////////////////////////////////////////// -->
+  <Target Name="GetNativeManifest" />
+
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // During DesignTimeBuild in order for the IDE to determine 
+  // if the project resolves correctly, this target will return 
+  // a fullpath.
+  /////////////////////////////////////////////////////////// -->
+  <Target Name="GetTargetPath" Returns="@(_TargetPath)" >
     <ItemGroup>
-      <BoostOutputs Remove="@(BoostOutputs)"/>
-      <BoostOutputs Include="$(OutputDir)\lib\*" />
+      <_TargetPath Include="$(BoostRoot)\Jamroot">
+        <!--<ProjectType>StaticLibrary</ProjectType>
+        <ProjectType Condition="'$(boost-link)'!=''">$(boost-link)</ProjectType>-->
+        <Description>Boost Library</Description>
+        <Name>Boost</Name>
+        <Private>Never</Private>
+        <FileType>info</FileType>
+        <ResolveableAssembly>false</ResolveableAssembly>
+      </_TargetPath>
     </ItemGroup>
-    <Touch Files="@(BoostOutputs)" />
+
   </Target>
 
 
   <!--
-    ///////////////////////////////////////////////////////////
-    // Integration with Visual Studio reference system
-    /////////////////////////////////////////////////////////// -->
-  <Target Name="GetTargetPath" />
-  <Target Name="GetNativeManifest" />
-  <Target Name="GetResolvedLinkLibs" />
-  <Target Name="GetCopyToOutputDirectoryItems" />
+  ///////////////////////////////////////////////////////////
+  // During Build it returns list of link libraries.
+  /////////////////////////////////////////////////////////// -->
+  <Target Name="GetResolvedLinkLibs" Returns="@(LibFullPath)">
+    <ItemGroup>
+      <LibFullPath Include="$(OutputDir)\lib\*.lib">
+        <ProjectType>StaticLibrary</ProjectType>
+        <ProjectType Condition="'$(boost-link)'!=''">$(boost-link)</ProjectType>
+        <FileType>lib</FileType>
+        <ResolveableAssembly>false</ResolveableAssembly>
+        <WindowsAppContainer Condition="'$(ConfigurationType)' == 'DynamicLibrary'">$(WindowsAppContainer)</WindowsAppContainer>
+      </LibFullPath>
+    </ItemGroup>
+  </Target>
+  
+
+  
+  <Target Name="GetCopyToOutputDirectoryItems" Returns="@(DLLToCopy)" >
+    <ItemGroup>
+      <DLLs Include="$(OutputDir)\lib\*.dll" />
+      <DLLToCopy Condition="'@(DLLs)'!=''" Include="%(FullPath)" >
+        <TargetPath>%(FileName).dll</TargetPath>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </DLLToCopy>
+    </ItemGroup>
+    <!--<Message Text="DLLToCopy: %(DLLToCopy.Identity) - %(DLLToCopy.TargetPath)" Importance="high" />-->
+  </Target>
+
+  
   
 </Project>

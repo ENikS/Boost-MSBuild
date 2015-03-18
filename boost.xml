@@ -39,13 +39,16 @@
       </StringProperty.DataSource>
     </StringProperty>
     <BoolProperty Name="RebuildOnChanges" DisplayName="Skip Rebuild Check"  IncludeInCommandLine="false"
-                  Description="Skip check for Boost source files changes. Only buld if Project settings are changed. Disable if working on Boost libraries source." 
+                  Description="This option tells Visual Studio to skip check for Boost source changes. It will only buld if Project settings are changed. Disable if working on Boost libraries source." 
                   Category="General"></BoolProperty>
     <DynamicEnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" EnumProvider="Toolsets" IncludeInCommandLine="false"
                          Switch="toolset=msvc" Separator="-"
                          Description="Specifies the toolset used for building the current configuration; If not set, the default toolset is used"
                          F1Keyword="VC.Project.VCConfiguration.PlatformToolset"
                          Category="General" />
+    <BoolProperty Name="CopyLocal" DisplayName="Copy DLLs" IncludeInCommandLine="false"
+                  Description="Copy DLLs to Output directory of a project referencing Boost project. This only apply when library built as Shared"
+                  Category="General"></BoolProperty>
     <StringProperty Name="BoostDir" DisplayName="Boost Root Directory" IncludeInCommandLine="false"
                     Description="Specifies Boost Root Directory."
                     HelpUrl="http://www.boost.org/doc/libs/master/doc/html/bbv2/overview.html#bbv2.overview.configuration"

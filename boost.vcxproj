@@ -31,6 +31,8 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PlatformToolset>v120</PlatformToolset>
     <IntDir>..\..\Temp dir</IntDir>
+    <RebuildOnChanges>
+    </RebuildOnChanges>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v120</PlatformToolset>
@@ -46,7 +48,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Label="Boost" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <python_library>false</python_library>
+    <python_library>
+    </python_library>
     <BoostDeployment>Stage</BoostDeployment>
     <enable-compression>false</enable-compression>
     <enable-zlib>false</enable-zlib>
@@ -55,7 +58,8 @@
     </boost-build-type>
     <boost-runtime-link>shared</boost-runtime-link>
     <boost-threading>multi</boost-threading>
-    <iostreams_library>false</iostreams_library>
+    <iostreams_library>
+    </iostreams_library>
     <boost-link>DynamicLibrary</boost-link>
     <zlib-source>
     </zlib-source>
@@ -63,6 +67,18 @@
     </zlib-libpath>
     <ConfigChecks>
     </ConfigChecks>
+    <boost-windows-api>
+    </boost-windows-api>
+    <StopOnError>
+    </StopOnError>
+    <thread_library>true</thread_library>
+    <chrono_library>true</chrono_library>
+    <date_time_library>true</date_time_library>
+    <atomic_library>true</atomic_library>
+    <exception_library>true</exception_library>
+    <system_library>true</system_library>
+    <boost-layout>
+    </boost-layout>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

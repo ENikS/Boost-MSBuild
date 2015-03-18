@@ -20,13 +20,9 @@ Copyright Eugene Sadovoi (C)
     </PropertyPageSchema>
     <PropertyPageSchema Include="$(ProjectDir)cxxflags.xml" />
     <PropertyPageSchema Include="$(ProjectDir)linkflags.xml" />
-    <BoostOutputs       Include="$(OutputDir)\lib\*" />
-    <BoostOutputs       Include="'Dummy'"  Condition="'@(BoostOutputs)'==''">
-      <ToDelete>true</ToDelete>
-    </BoostOutputs>
   </ItemGroup>
-
   
+
   <!--
   ///////////////////////////////////////////////////////////
   // Defaults
@@ -34,17 +30,10 @@ Copyright Eugene Sadovoi (C)
   <PropertyGroup>
     <BoostRoot Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
     <BoostRoot Condition="'$(BoostRoot)'==''">$([System.IO.Path]::GetFullPath("$(BOOST_BUILD_PATH)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
-    <OutputDir>$([System.IO.Path]::GetFullPath("$(OutDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</OutputDir>
-    <BuildDir>$([System.IO.Path]::GetFullPath("$(IntDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BuildDir>
+    <OutputDir>$([System.IO.Path]::GetFullPath('$([System.IO.Path]::Combine("$(MSBuildProjectDirectory)", "$(OutDir)"))').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</OutputDir>
+    <BuildDir>$([System.IO.Path]::GetFullPath('$([System.IO.Path]::Combine("$(MSBuildProjectDirectory)", "$(IntDir)"))').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BuildDir>
     <DummyFile Condition="'$(RebuildOnChanges)'=='false'">Dummy</DummyFile>
   </PropertyGroup>
-
-  <ItemGroup Label="Dirs to clear">
-    <BoostFolders Include="$(BuildDir)\boost" />
-    <BoostFolders Include="$(OutputDir)\include" />
-    <BoostFolders Include="$(OutputDir)\lib" />
-    <BoostFolders Include="$(OutputDir)\bin" />
-  </ItemGroup>
 
   <ItemGroup Label="Engine source files">
     <EngineSourceFiles Include="$(BoostRoot)\tools\build\src\engine\*.h" />
@@ -345,8 +334,8 @@ Copyright Eugene Sadovoi (C)
     <ItemGroup Label="Build Settings">
       <boost-options Condition="'$(PlatformToolset)'  ==''" Include="toolset=msvc" />
       <boost-options Condition="'$(PlatformToolset)'  !=''" Include="$([System.String]::Format('toolset=msvc-{0}.{1}', $(PlatformToolset.Substring(1, 2)), $(PlatformToolset.Substring(3,1))))" />
-      <boost-options Condition="'$(BuildDir)'!=''"                                       Include="--build-dir=&#34;$(BuildDir)&#34;" />
-      <boost-options Condition="'$(OutputDir)'!=''"                                      Include="--stagedir=&#34;$(OutputDir)&#34;" />
+      <boost-options Condition="'$(BuildDir)' !=''"                                      Include="--build-dir=&#34;$(BuildDir)&#34;" />
+      <boost-options Condition="'$(OutputDir)'!='' And '$(BoostDeployment)'!='Install'"  Include="--stagedir=&#34;$(OutputDir)&#34;" />
       <boost-options Condition="'$(OutputDir)'!='' And '$(BoostDeployment)'=='Install'"  Include="--prefix=&#34;$(OutputDir)&#34;" />
     </ItemGroup>
     
@@ -393,18 +382,18 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // BUILD TARGET
   /////////////////////////////////////////////////////////// -->
-  <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;" 
+  <Target Name="Build" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;BoostHeaders;GetBuiltLibs;GetBoostOutputs;" 
           Inputs="$(MSBuildProjectFullPath);" Outputs="@(BoostOutputs);$(DummyFile)" 
           Returns="@(BoostOutputs)" >
-    <Exec Command="b2.exe @(boost-options, ' ')"  WorkingDirectory="$(BoostRoot)\"  
-          EnvironmentVariables="VS_UNICODE_OUTPUT=" />
 
-    <ItemGroup>
-      <BoostOutputs Remove="%(BoostOutputs.Identity)" Condition="'%(BoostOutputs.ToDelete)'=='true'" />
-      <BoostOutputs Include="$(OutputDir)\lib\*" />
-    </ItemGroup>
+    <Exec Command="b2.exe @(boost-options, ' ')"  WorkingDirectory="$(BoostRoot)\" EnvironmentVariables="VS_UNICODE_OUTPUT=" />
     
-    <Touch Files="@(BoostOutputs)" />
+    <ItemGroup>
+      <FilesToTouch Include="$(OutputDir)\lib\*boost*%(BuiltLibs.Identity)*.lib" />
+      <FilesToTouch Include="$(OutputDir)\lib\boost*%(BuiltLibs.Identity)*.dll" />
+    </ItemGroup>
+
+    <Touch Files="%(FilesToTouch.Identity)" ContinueOnError="true" />
   </Target>
   
 
@@ -419,8 +408,20 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // CLEAN TARGET
   /////////////////////////////////////////////////////////// -->
-  <Target Name="Clean" >
-    <RemoveDir Directories="@(BoostFolders)"   ContinueOnError="true"  />
+  <Target Name="Clean" DependsOnTargets="PrepareForBoostBuild;BuildJamTool;" >
+    <!--
+    <Exec Command="b2.exe @(boost-options, ' ') - -clean-all"  WorkingDirectory="$(BoostRoot)\"
+          EnvironmentVariables="VS_UNICODE_OUTPUT=" ContinueOnError="true" />
+    -->
+    
+    <ItemGroup>
+      <BoostFiles Include="$(OutputDir)\lib\boost_*.lib" />
+      <BoostFiles Include="$(OutputDir)\lib\libboost_*.lib" />
+      <BoostFiles Include="$(OutputDir)\lib\boost_*.dll" />
+    </ItemGroup>
+    
+    <Delete Files="@(BoostFiles)"              ContinueOnError="true"/>
+    <RemoveDir Directories="$(BuildDir)\boost;" ContinueOnError="true"  />
   </Target>
 
 
@@ -435,7 +436,7 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // During DesignTimeBuild in order for the IDE to determine 
   // if the project resolves correctly, this target will return 
-  // a fullpath.
+  // a fullpath to Jamroot to indicate instance of Boost library.
   /////////////////////////////////////////////////////////// -->
   <Target Name="GetTargetPath" Returns="@(_TargetPath)" >
     <ItemGroup>
@@ -445,7 +446,7 @@ Copyright Eugene Sadovoi (C)
         <ResolveableAssembly>false</ResolveableAssembly>
       </_TargetPath>
     </ItemGroup>
-
+    <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="TargetPath=@(_TargetPath)"/>
   </Target>
 
 
@@ -453,9 +454,9 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // During Build it returns list of link libraries.
   /////////////////////////////////////////////////////////// -->
-  <Target Name="GetResolvedLinkLibs" Returns="@(LibFullPath)">
+  <Target Name="GetResolvedLinkLibs" DependsOnTargets="GetBuiltLibs" Returns="@(LibFullPath)">
     <ItemGroup>
-      <LibFullPath Include="$(OutputDir)\lib\*.lib">
+      <LibFullPath Include="$(OutputDir)\lib\*boost*%(BuiltLibs.Identity)*.lib">
         <ProjectType>StaticLibrary</ProjectType>
         <ProjectType Condition="'$(boost-link)'!=''">$(boost-link)</ProjectType>
         <FileType>lib</FileType>
@@ -463,6 +464,7 @@ Copyright Eugene Sadovoi (C)
         <WindowsAppContainer Condition="'$(ConfigurationType)' == 'DynamicLibrary'">$(WindowsAppContainer)</WindowsAppContainer>
       </LibFullPath>
     </ItemGroup>
+    <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="ResolvedLinkLibs=@(LibFullPath)"/>
   </Target>
 
 
@@ -470,16 +472,60 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // Returns list of DLLs to copy to output dir of parent app.
   /////////////////////////////////////////////////////////// -->
-  <Target Name="GetCopyToOutputDirectoryItems" Returns="@(DLLToCopy)" >
+  <Target Name="GetCopyToOutputDirectoryItems" DependsOnTargets="GetBuiltLibs" Returns="@(DLLToCopy)" 
+          Condition="'$(CopyLocal)'!='false' And '$(boost-link)'=='DynamicLibrary'" >
     <ItemGroup>
-      <DLLs Include="$(OutputDir)\lib\*.dll" />
-      <DLLToCopy Condition="'@(DLLs)'!=''" Include="%(FullPath)" >
+      <BoostDlls Include="$(OutputDir)\lib\*boost*%(BuiltLibs.Identity)*.dll" Condition="'%(BuiltLibs.Identity)'!=''" />
+      <DLLToCopy Include="@(BoostDlls)" Condition="'%(BoostDlls.Identity)'!=''" >
         <TargetPath>%(FileName).dll</TargetPath>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </DLLToCopy>
     </ItemGroup>
+    <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="CopyToOutputDirectoryItems=@(DLLToCopy)"/>
   </Target>
 
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Get list of libraries to build
+  /////////////////////////////////////////////////////////// -->
+  <Target Name="GetBuiltLibs" DependsOnTargets="BuildJamTool" Returns="@(BuiltLibs)" >
+    <PropertyGroup>
+      <TempFile>$([System.IO.Path]::GetTempFileName())</TempFile>
+    </PropertyGroup>
+    <Exec Command="b2.exe @(boost-options, ' ') --show-libraries > &#34;$(TempFile)&#34;"  WorkingDirectory="$(BoostRoot)\"  
+          EnvironmentVariables="VS_UNICODE_OUTPUT=" IgnoreExitCode="true" />
+    
+    <ReadLinesFromFile Condition="Exists('$(TempFile)')" File="$(TempFile)">
+      <Output TaskParameter="Lines" ItemName="RawOutput" />
+    </ReadLinesFromFile>
+    <Delete Condition="Exists('$(TempFile)')" Files="$(TempFile)"/>
+    
+    <ItemGroup>
+      <BuiltLibs Include="$([System.Text.RegularExpressions.Regex]::Match(%(RawOutput.Identity), (?&lt;=\-\s)(.*) ))" />
+    </ItemGroup>
+  </Target>
   
   
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Get list of libraries to build
+  /////////////////////////////////////////////////////////// -->
+  <Target Name="GetBoostOutputs" DependsOnTargets="GetBuiltLibs" Returns="@(BoostOutputs)" >
+
+    <ItemGroup>
+      <BoostOutputs Include="$(OutputDir)\lib\*boost*%(BuiltLibs.Identity)*.lib" >
+        <Library>%(BuiltLibs.Identity)</Library>
+      </BoostOutputs>
+      <ExistingLibs Include="%(BoostOutputs.Library)" />
+      <BoostOutputs Include="@(BuiltLibs)" Exclude="@(ExistingLibs)" 
+                    Condition="'@(ExistingLibs->Count())'!='@(BuiltLibs->Count())'" />
+
+        <BoostOutputs Include="%(BoostOutputs.RootDir)%(BoostOutputs.Directory)%(BoostOutputs.Filename).dll" 
+                    Condition="'$([System.String]::Copy(%(BoostOutputs.Filename)).StartsWith(&#34;boost_&#34;))'=='true' And 
+                               '%(BoostOutputs.Library)'!='' And '$(boost-link)'=='DynamicLibrary'" />
+    </ItemGroup>
+  </Target>
+
+
 </Project>

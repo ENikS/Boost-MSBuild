@@ -427,27 +427,27 @@ Copyright Eugene Sadovoi (C)
 
   <!--
   ///////////////////////////////////////////////////////////
-  // Integration with Visual Studio
-  /////////////////////////////////////////////////////////// -->
-  <Target Name="GetNativeManifest" />
-
-
-  <!--
-  ///////////////////////////////////////////////////////////
   // During DesignTimeBuild in order for the IDE to determine 
   // if the project resolves correctly, this target will return 
   // a fullpath to Jamroot to indicate instance of Boost library.
   /////////////////////////////////////////////////////////// -->
-  <Target Name="GetTargetPath" Returns="@(_TargetPath)" >
+  <Target Name="GetTargetPath" Returns="@(TargetPath)" >
     <ItemGroup>
-      <_TargetPath Include="$(BoostRoot)\Jamroot">
+      <TargetPath Include="$(BoostRoot)\Jamroot">
         <Private>true</Private>
         <FileType>info</FileType>
         <ResolveableAssembly>false</ResolveableAssembly>
-      </_TargetPath>
+      </TargetPath>
     </ItemGroup>
-    <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="TargetPath=@(_TargetPath)"/>
+    <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="TargetPath=@(TargetPath)"/>
   </Target>
+
+
+  <!--
+  ///////////////////////////////////////////////////////////
+  // Integration with Visual Studio
+  /////////////////////////////////////////////////////////// -->
+  <Target Name="GetNativeManifest" />
 
 
   <!--

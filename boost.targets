@@ -427,17 +427,30 @@ Copyright Eugene Sadovoi (C)
 
   <!--
   ///////////////////////////////////////////////////////////
+  // Returns list of dlls
+  /////////////////////////////////////////////////////////// -->
+  <Target Name="GetNativeTargetPath" DependsOnTargets="GetBuiltLibs" Returns="@(NativeTargetPath)" 
+          Condition="'$(DesignTimeBuild)' != 'true'" >
+    
+    <MSBuild Projects="@(ProjectReference)" Targets="GetNativeTargetPath" >
+      <Output ItemName="NativeTargetPath" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+    
+    <ItemGroup>
+      <NativeTargetPath Include="$(OutputDir)\lib\*boost*%(BuiltLibs.Identity)*.dll" Condition="'%(BuiltLibs.Identity)'!=''" />
+    </ItemGroup>
+  </Target>
+
+  
+  <!--
+  ///////////////////////////////////////////////////////////
   // During DesignTimeBuild in order for the IDE to determine 
   // if the project resolves correctly, this target will return 
   // a fullpath to Jamroot to indicate instance of Boost library.
   /////////////////////////////////////////////////////////// -->
-  <Target Name="GetTargetPath" Returns="@(TargetPath)" >
+  <Target Name="GetTargetPath" DependsOnTargets="GetNativeTargetPath"  Returns="@(NativeTargetPath)" >
     <ItemGroup>
-      <TargetPath Include="$(BoostRoot)\Jamroot">
-        <Private>true</Private>
-        <FileType>info</FileType>
-        <ResolveableAssembly>false</ResolveableAssembly>
-      </TargetPath>
+      <NativeTargetPath Include="$(BoostRoot)\Jamroot" Condition="'$(DesignTimeBuild)' == 'true'" />
     </ItemGroup>
     <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="TargetPath=@(TargetPath)"/>
   </Target>
@@ -464,6 +477,9 @@ Copyright Eugene Sadovoi (C)
         <WindowsAppContainer Condition="'$(ConfigurationType)' == 'DynamicLibrary'">$(WindowsAppContainer)</WindowsAppContainer>
       </LibFullPath>
     </ItemGroup>
+    <MSBuild Projects="@(ProjectReference)" Targets="GetResolvedLinkLibs" >
+      <Output ItemName="LibFullPath" TaskParameter="TargetOutputs"/>
+    </MSBuild>
     <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="ResolvedLinkLibs=@(LibFullPath)"/>
   </Target>
 
@@ -472,17 +488,7 @@ Copyright Eugene Sadovoi (C)
   ///////////////////////////////////////////////////////////
   // Returns list of DLLs to copy to output dir of parent app.
   /////////////////////////////////////////////////////////// -->
-  <Target Name="GetCopyToOutputDirectoryItems" DependsOnTargets="GetBuiltLibs" Returns="@(DLLToCopy)" 
-          Condition="'$(CopyLocal)'!='false' And '$(boost-link)'=='DynamicLibrary'" >
-    <ItemGroup>
-      <BoostDlls Include="$(OutputDir)\lib\*boost*%(BuiltLibs.Identity)*.dll" Condition="'%(BuiltLibs.Identity)'!=''" />
-      <DLLToCopy Include="@(BoostDlls)" Condition="'%(BoostDlls.Identity)'!=''" >
-        <TargetPath>%(FileName).dll</TargetPath>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </DLLToCopy>
-    </ItemGroup>
-    <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="CopyToOutputDirectoryItems=@(DLLToCopy)"/>
-  </Target>
+  <Target Name="GetCopyToOutputDirectoryItems" />
 
 
   <!--
@@ -527,5 +533,5 @@ Copyright Eugene Sadovoi (C)
     </ItemGroup>
   </Target>
 
-
+  
 </Project>

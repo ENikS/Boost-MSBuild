@@ -226,11 +226,6 @@
                     Description="Path to the zlib headers, if they're not in a location where they'll be found automatically."
                     Subtype="folder"
                     HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
-    <StringProperty Name="zlib-libpath" DisplayName="ZLIB Binary" Category="Compression"
-                    Switch="-sZLIB_LIBPATH" Separator="="
-                    Description="Path to the zlib binary, if it's not in a location where it will be found automatically. If linking with a dynamic build of zlib, specify the path to the import library."
-                    Subtype="folder"
-                    HelpUrl="http://www.boost.org/doc/libs/master/libs/iostreams/doc/installation.html" />
     <StringProperty Name="zlib-source" DisplayName="ZLIB Source" Category="Compression" 
                     Switch="-sZLIB_SOURCE" Separator="="
                     Description="Path to the zlib source files, if they're not in a location where they'll be found automatically."

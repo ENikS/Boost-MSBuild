@@ -15,11 +15,11 @@ Copyright Eugene Sadovoi (C)
   // UI Configuration
   ///////////////////////////////////////////////////////////-->
   <ItemGroup>
-    <PropertyPageSchema Include="$(ProjectDir)boost.xml" >
+    <PropertyPageSchema Include="$(MSBuildProjectDirectory)\boost.xml" >
       <Context>Project</Context>
     </PropertyPageSchema>
-    <PropertyPageSchema Include="$(ProjectDir)cxxflags.xml" />
-    <PropertyPageSchema Include="$(ProjectDir)linkflags.xml" />
+    <PropertyPageSchema Include="$(MSBuildProjectDirectory)\cxxflags.xml"  />
+    <PropertyPageSchema Include="$(MSBuildProjectDirectory)\linkflags.xml" />
   </ItemGroup>
   
 
@@ -325,7 +325,7 @@ Copyright Eugene Sadovoi (C)
     <Delete Condition="'@(temp-data)'!=''" Files="$(TempFile)" />
   </Target>
 
-  
+
   <!--
   ///////////////////////////////////////////////////////////
   // Prepare command line options for build command
@@ -338,6 +338,14 @@ Copyright Eugene Sadovoi (C)
       <boost-options Condition="'$(OutputDir)'!='' And '$(BoostDeployment)'!='Install'"  Include="--stagedir=&#34;$(OutputDir)&#34;" />
       <boost-options Condition="'$(OutputDir)'!='' And '$(BoostDeployment)'=='Install'"  Include="--prefix=&#34;$(OutputDir)&#34;" />
     </ItemGroup>
+
+    <MSBuild Targets="GetResolvedLinkLibs" Projects="$(MSBuildProjectFullPath)" >
+      <Output ItemName="Dependencies" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+
+    <ItemGroup Label="Dependency Libraries">
+      <boost-options Condition="'%(Dependencies.Project)'=='{8fd826f8-3739-44e6-8cc8-997122e53b8d}'" Include="-sZLIB_LIBPATH=&#34;%(Dependencies.Identity)&#34;" />
+    </ItemGroup>
     
     <MSBuild Targets="ConfigHelper" Projects="$(MSBuildProjectFullPath)" BuildInParallel="true"
              Properties="PropertyPageSchema=%(PropertyPageSchema.Identity);Context=%(PropertyPageSchema.Context)" >
@@ -347,6 +355,7 @@ Copyright Eugene Sadovoi (C)
     <ItemGroup Label="Build Settings">
       <boost-options Condition="'$(AdditionalOptions)'!=''" Include="$(AdditionalOptions)" />
     </ItemGroup>
+    <Message Text="boost-options: %(boost-options.Identity)" Importance="high" />
   </Target>
   
 

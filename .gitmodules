@@ -1,0 +1,6 @@
+[submodule "boost"]
+	path = boost
+	url = https://github.com/boostorg/boost.git
+[submodule "zlib"]
+	path = zlib
+	url = https://github.com/madler/zlib.git

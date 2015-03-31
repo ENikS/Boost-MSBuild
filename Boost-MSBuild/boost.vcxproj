@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\zlib\contrib\vstudio\vc12\zlib.vcxproj">
+    <ProjectReference Include="..\zlib.vcxproj">
       <Project>{8fd826f8-3739-44e6-8cc8-997122e53b8d}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -28,6 +28,9 @@
     <Keyword>MakeProj</Keyword>
     <ConfigurationType>Makefile</ConfigurationType>
     <BoostDir>$(BOOST_BUILD_PATH)</BoostDir>
+    <BoostDir Condition="'$(BoostDir)'=='' And Exists('boost\Jamroot')">boost</BoostDir>
+    <BoostDir Condition="'$(BoostDir)'=='' And Exists('..\boost\Jamroot')">..\boost</BoostDir>
+    <BoostDir Condition="'$(BoostDir)'=='' And Exists('..\..\boost\Jamroot')">..\..\boost</BoostDir>
     <UseDefaultProjectTools Label="Import Settings">false</UseDefaultProjectTools>
     <UseDefaultPropertyPageSchemas Label="Import Settings">false</UseDefaultPropertyPageSchemas>
     <UseDefaultGeneralPropertyPageSchema Label="Import Settings">false</UseDefaultGeneralPropertyPageSchema>
@@ -35,12 +38,15 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PlatformToolset>v120</PlatformToolset>
-    <IntDir>..\..\Temp dir</IntDir>
+    <IntDir>$(Configuration)\</IntDir>
     <RebuildOnChanges>
     </RebuildOnChanges>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v120</PlatformToolset>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformToolset>v120</PlatformToolset>

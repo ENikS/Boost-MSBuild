@@ -1,4 +1,5 @@
-﻿<!--
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
 ***********************************************************************************************
 WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
           created a backup copy.  Incorrect changes to this file will make it
@@ -28,8 +29,7 @@ Copyright Eugene Sadovoi (C)
   // Defaults
   ///////////////////////////////////////////////////////////-->
   <PropertyGroup>
-    <BoostRoot Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath("$(BoostDir)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
-    <BoostRoot Condition="'$(BoostRoot)'==''">$([System.IO.Path]::GetFullPath("$(BOOST_BUILD_PATH)").TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
+    <BoostRoot Condition="'$(BoostDir)'!=''">$([System.IO.Path]::GetFullPath('$([System.IO.Path]::Combine("$(MSBuildProjectDirectory)", "$(BoostDir)"))').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BoostRoot>
     <OutputDir>$([System.IO.Path]::GetFullPath('$([System.IO.Path]::Combine("$(MSBuildProjectDirectory)", "$(OutDir)"))').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</OutputDir>
     <BuildDir>$([System.IO.Path]::GetFullPath('$([System.IO.Path]::Combine("$(MSBuildProjectDirectory)", "$(IntDir)"))').TrimEnd($([System.IO.Path]::DirectorySeparatorChar)))</BuildDir>
     <DummyFile Condition="'$(RebuildOnChanges)'=='false'">Dummy</DummyFile>
@@ -355,7 +355,8 @@ Copyright Eugene Sadovoi (C)
     <ItemGroup Label="Build Settings">
       <boost-options Condition="'$(AdditionalOptions)'!=''" Include="$(AdditionalOptions)" />
     </ItemGroup>
-    <Message Text="boost-options: %(boost-options.Identity)" Importance="high" />
+    <Message Text="BoostRoot: $(BoostRoot)" Importance="high" />
+    <Message Text="Options: @(boost-options, ' ')" Importance="high" />
   </Target>
   
 
